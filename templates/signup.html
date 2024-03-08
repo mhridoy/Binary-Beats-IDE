@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup | CodeSage By Moshiur | Dreamers Academy</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            color: #0f0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            padding: 20px;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.9);
+            text-align: center;
+            color: #fff;
+            width: 420px;
+            border: 1px solid #0f0;
+            box-shadow: 0 0 15px #0f0;
+        }
+        input, button {
+            width: 80%;
+            padding: 12px;
+            margin: 15px auto;
+            display: block;
+            background-color: #222;
+            border: 1px solid #0f0;
+            color: #0f0;
+            border-radius: 3px;
+            font-size: 16px;
+            box-shadow: 0 0 10px #0f0 inset;
+        }
+        input:focus, button:hover {
+            background-color: #333;
+            outline: none;
+            border-color: #0f0;
+            box-shadow: 0 0 15px #0f0 inset;
+        }
+        button {
+            cursor: pointer;
+            background-color: #333;
+            color: #fff;
+            font-weight: bold;
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        a {
+            color: #0f0;
+            text-decoration: none;
+            text-shadow: 0 0 5px #0f0;
+            margin-top: 15px;
+        }
+        a:hover {
+            text-decoration: underline;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .form-title {
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px #0f0;
+            font-size: 24px;
+        }
+        @keyframes matrixRain {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+    </style>
+</head>
+<body>
+    <div id="matrix"></div>
+    <div class="container">
+        <div class="form-title">Join CodeSage | Dreamers Academy</div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      <form action="/signup" method="post">
+          <input type="text" name="username" placeholder="Username" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <button type="submit">Sign Up</button>
+      </form>
+      <a href="/login">Login</a>
+    </div>
+
+    <script>
+        const matrix = document.getElementById('matrix');
+
+        function createMatrixRain() {
+            const columnWidth = 10; // Narrower for denser rain
+            const columns = Math.floor(window.innerWidth / columnWidth);
+            for (let i = 0; i < columns; i++) {
+                const column = document.createElement('div');
+                column.style.width = `${columnWidth}px`;
+                column.style.position = "absolute";
+                column.style.left = `${i * columnWidth}px`;
+                column.style.top = "0";
+                column.style.overflow = "hidden";
+                column.style.pointerEvents = "none";
+                column.style.animation = `matrixRain ${Math.random() * 2 + 2}s infinite linear`; // Increased speed for more dynamic effect
+
+                let binaryString = '';
+                for (let j = 0; j < window.innerHeight / 20; j++) {
+                    binaryString += Math.floor(Math.random() * 2) ? '0' : '1';
+                    binaryString += '<br>';
+                }
+                column.innerHTML = binaryString;
+                matrix.appendChild(column);
+            }
+        }
+        createMatrixRain();
+    </script>
+</body>
+</html>

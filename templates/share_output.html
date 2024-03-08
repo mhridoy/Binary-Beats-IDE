@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Snippet Output</title>
+    <style>{{ snippet.css_code }}</style>
+</head>
+<body>
+    {{ snippet.html_code | safe }}
+    <script>{{ snippet.js_code }}</script>
+</body>
+</html>

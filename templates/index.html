@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <!-- Update the title to include your main keyword -->
+    <title>CodeSage by Moshiur - The Ultimate Web Editor for Coders</title>
+    
+    <!-- Add meta description tag with keywords -->
+    <meta name="description" content="Discover CodeSage by Moshiur, the premier web editor designed for modern developers. Experience the best coding platform created by Moshiur for web development enthusiasts and coderm professionals.">
+    
+    <!-- Add keywords meta tag -->
+    <meta name="keywords" content="CodeSage by Moshiur, web editor Moshiur, coderm, web development, coding platform, online editor">
+    
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="topbar">
+    <div class="topbar-content">
+        <h2><i class="fas fa-code"></i> Web Editor</h2>
+        <h3>Welcome, <span id="username">{{ current_user.username }}</span></h3>
+    </div>
+    <div class="navigation-links">
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <a href="/snippets"><i class="fas fa-clipboard-list"></i> View My Snippets</a>
+    </div>
+    <div class="editor-tabs">
+        <div class="tab active" onclick="showEditor('html')"><i class="fab fa-html5"></i> HTML</div>
+        <div class="tab" onclick="showEditor('css')"><i class="fab fa-css3-alt"></i> CSS</div>
+        <div class="tab" onclick="showEditor('js')"><i class="fab fa-js-square"></i> JavaScript</div>
+    </div>
+    <div class="actions">
+        <button class="run-button" onclick="runCode()"><i class="fas fa-play"></i> Run Code</button>
+        <form id="saveForm" style="display: inline;">
+            <button type="button" onclick="saveCode()"><i class="fas fa-save"></i> Save Code</button>
+            <button type="button" onclick="shareCode()"><i class="fas fa-share-alt"></i> Share Code</button>
+            <button type="button" onclick="shareOutput()"><i class="fas fa-external-link-alt"></i> Share Output</button>
+        </form>
+        <div class="zoom-controls">
+            <button onclick="changeZoom(1)"><i class="fas fa-search-plus"></i></button>
+           <button onclick="changeZoom(-1)"><i class="fas fa-search-minus"></i></button>
+        </div>
+    </div>
+    <p id="shareLink"></p>
+</div>
+
+<div id="editorOutputContainer">
+    <div id="htmlEditor" class="editor"></div>
+    <div id="cssEditor" class="editor" style="display: none;"></div>
+    <div id="jsEditor" class="editor" style="display: none;"></div>
+    <div class="resize" onmousedown="initResize(event)"></div>
+    <iframe id="output"></iframe>
+</div>
+
+<script src="static/js/script.js"></script>
+</body>
+</html>
