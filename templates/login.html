@@ -3,134 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker's Portal | CodeSage by Moshiur</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Binary Beats IDE</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23007E33' width='100' height='100'/><text x='50%' y='60%' font-family='Arial' font-size='50' text-anchor='middle' fill='white'>01</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body, html {
-            height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            background-color: #000;
-            color: #0f0;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        #matrix {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            color: #0f0;
-            pointer-events: none;
+            height: 100%;
+            background: #121212;
+            color: #76ff03;
+            font-family: 'Roboto Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
             overflow: hidden;
         }
-        .container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            padding: 20px;
-            border-radius: 5px;
-            background: rgba(0, 0, 0, 0.85);
+
+        .typing-animation {
+            margin: 20px auto;
+            font-size: 24px;
             text-align: center;
-            color: #fff;
-            width: 420px; /* Adjusted for better layout */
-            border: 1px solid #0f0;
-            box-shadow: 0 0 10px #0f0;
         }
+
+        .auth-container {
+            width: 60%;
+            max-width: 500px;
+            text-align: center;
+            padding: 40px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.85);
+            box-shadow: 0px 0px 20px #00ff00;
+            margin: 20px 0;
+        }
+
         input, button {
-            width: 80%;
-            padding: 12px; /* Increased padding for larger touch area */
+            width: calc(100% - 20px);
+            padding: 15px;
             margin: 10px 0;
-            background-color: #1d352f;
-            border: 1px solid #0f0;
-            color: #0f0;
-            border-radius: 3px;
-            font-family: 'Courier New', Courier, monospace;
-            text-align: center;
-            font-size: 18px; /* Increased font size for better readability */
-            box-shadow: 0 0 5px #0f0;
+            background: transparent;
+            border: 1px solid #76ff03;
+            border-radius: 5px;
+            color: #76ff03;
+            font-family: 'Roboto Mono', monospace;
         }
-        input:focus, button:hover {
-            background-color: #333;
-            outline: none;
-            border: 2px solid #0f0;
-        }
+
         button {
             cursor: pointer;
-            background-color: #333;
-            font-weight: bold; /* Make the button text stand out */
+            font-weight: bold;
+            background: #003300;
+            transition: background-color 0.3s ease;
         }
+
+        button:hover {
+            background-color: #005500;
+        }
+
         a {
-            color: #0f0;
+            color: #76ff03;
             text-decoration: none;
-            text-shadow: 0 0 5px #0f0;
-            margin-top: 12px; /* Adjust spacing */
+            display: inline-block;
+            margin-top: 10px;
         }
-        a:hover {
-            color: #0f0;
-            text-decoration: underline;
+
+        .code-animation {
+            position: fixed;
+            top: 10%;
+            width: 15%;
+            font-size: 14px;
+            color: #76ff03;
+            overflow: hidden;
         }
-        h1 {
-            margin-bottom: 20px; /* Adjust spacing */
-            text-shadow: 0 0 5px #0f0;
-            font-size: 22px; /* Adjusted title size for emphasis */
-        }
-        /* Adjusted Matrix Code Effect for a denser look */
-        @keyframes matrixEffect {
-            from { transform: translateY(0); }
-            to { transform: translateY(-100%); }
+
+        .code-animation.left { left: 2%; animation: slideUp 10s linear infinite; }
+        .code-animation.right { right: 2%; animation: slideUp 12s linear infinite; }
+
+        @keyframes slideUp {
+            0% { top: 100%; }
+            100% { top: -150%; }
         }
     </style>
 </head>
 <body>
-    <div id="matrix"></div>
-    <div class="container">
-        <h1>CodeSage by Moshiur | Dreamers Academy</h1>
-        {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    <form action="/login" method="post">
-        <input type="text" name="username" placeholder="Username" required autofocus>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
-    <a href="/signup">Sign up</a>
+    <div class="code-animation left">
+        # Python code snippet<br>
+        def hello_world():<br>
+        &emsp;print("Hello, World!")<br><br>
+        if __name__ == "__main__":<br>
+        &emsp;hello_world()
+    </div>
+
+    <div class="typing-animation" id="typing-animation"></div>
+    
+    <div class="auth-container">
+        <input type="text" placeholder="Username" required><br>
+        <input type="password" placeholder="Password" required><br>
+        <button type="submit">Log In</button>
+        <div><a href="/signup">Sign up</a></div>
+    </div>
+
+    <div class="code-animation right">
+        # More Python code<br>
+        import math<br>
+        def area_of_circle(r):<br>
+        &emsp;return math.pi * r ** 2<br><br>
+        print(area_of_circle(5))
     </div>
 
     <script>
-        const matrix = document.getElementById('matrix');
-        function createMatrixEffect() {
-            const columnWidth = 20; // Adjust column width for a denser matrix rain
-            const columns = Math.floor(window.innerWidth / columnWidth);
-            for (let i = 0; i < columns; i++) {
-                const column = document.createElement('div');
-                column.style.width = `${columnWidth}px`;
-                column.style.position = "absolute";
-                column.style.left = `${i * columnWidth}px`;
-                column.style.top = "0";
-                column.style.overflow = "hidden";
-                column.style.pointerEvents = "none";
-                column.style.animation = `matrixEffect ${Math.random() * 10 + 10}s infinite linear`; // Slower animation for dramatic effect
+        const typingElement = document.getElementById('typing-animation');
+        const phrases = ['Binary', 'Beats', 'IDE'];
+        let phraseIndex = 0;
+        let letterIndex = 0;
+        let currentPhrase = '';
+        let isDeleting = false;
 
-                let binaryString = '';
-                for (let j = 0; j < window.innerHeight / 20; j++) { // Fill column height with binary numbers
-                    binaryString += Math.floor(Math.random() * 2) ? '0' : '1';
-                    binaryString += '<br>';
+        function type() {
+            if (isDeleting) {
+                if (letterIndex <= 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    setTimeout(type, 200);
+                } else {
+                    currentPhrase = currentPhrase.substring(0, currentPhrase.length - 1);
+                    letterIndex--;
+                    setTimeout(type, 100);
                 }
-                column.innerHTML = binaryString;
-                matrix.appendChild(column);
+            } else {
+                if (letterIndex === phrases[phraseIndex].length) {
+                    isDeleting = true;
+                    setTimeout(type, 1000);
+                } else {
+                    currentPhrase += phrases[phraseIndex].charAt(letterIndex);
+                    letterIndex++;
+                    setTimeout(type, 200);
+                }
             }
+            typingElement.textContent = currentPhrase;
         }
-        createMatrixEffect();
+
+        type();
     </script>
 </body>
 </html>
