@@ -8,23 +8,18 @@ var animationFrameRequested = false;
 function initMonaco() {
     require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
     require(['vs/editor/editor.main'], function () {
-        // Initialize the HTML editor
         editors.html = monaco.editor.create(document.getElementById('htmlEditor'), {
             value: localStorage.getItem('htmlCode') || '<!-- HTML goes here -->',
             language: 'html',
             theme: 'vs-dark',
             automaticLayout: true,
         });
-
-        // Initialize the CSS editor
         editors.css = monaco.editor.create(document.getElementById('cssEditor'), {
             value: localStorage.getItem('cssCode') || '/* CSS goes here */',
             language: 'css',
             theme: 'vs-dark',
             automaticLayout: true,
         });
-
-        // Initialize the JavaScript editor
         editors.js = monaco.editor.create(document.getElementById('jsEditor'), {
             value: localStorage.getItem('jsCode') || '// JavaScript goes here',
             language: 'javascript',
@@ -33,60 +28,25 @@ function initMonaco() {
         });
 
         // Show HTML editor by default
-        showEditor('html');
-
-        // Register custom completion item provider for HTML
-        monaco.languages.registerCompletionItemProvider('html', {
-            provideCompletionItems: function(model, position) {
-                var suggestions = [
-                    {
-                        label: 'html5boilerplate',
-                        kind: monaco.languages.CompletionItemKind.Snippet,
-                        insertText: [
-                            '<!DOCTYPE html>',
-                            '<html lang="en">',
-                            '<head>',
-                            '    <meta charset="UTF-8">',
-                            '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
-                            '    <title>${1:Document}</title>',
-                            '</head>',
-                            '<body>',
-                            '    ${0}',
-                            '</body>',
-                            '</html>'
-                        ].join('\n'),
-                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                        documentation: 'HTML5 Boilerplate'
-                    },
-                    // Add more custom snippets or completion items here
-                ];
-                return { suggestions: suggestions };
-            }
-        });
-
-        // Optionally, register custom completion item providers for CSS and JavaScript
+        currentEditor = 'html';
+        document.getElementById('htmlEditor').style.display = 'block';
     });
 }
+
 
 function showEditor(lang) {
     Object.keys(editors).forEach(function(key) {
         document.getElementById(key + 'Editor').style.display = 'none';
-        editors[key].layout(); // Recalculate layout after changing visibility
     });
-    document.getElementById(lang + 'Editor').style.display = 'block';
     currentEditor = editors[lang];
+    document.getElementById(lang + 'Editor').style.display = 'block';
     document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
-        if (tab.textContent.trim().toLowerCase() === lang) {
+        if (tab.textContent.toLowerCase() === lang) {
             tab.classList.add('active');
         }
     });
 }
-
-// Call initMonaco in your script to initialize the editors when the page is ready
-document.addEventListener('DOMContentLoaded', function() {
-    initMonaco();
-});
 
 function runCode() {
     var htmlCode = editors.html.getValue();
@@ -130,7 +90,7 @@ function shareOutput() {
         // Assuming the server responds with the unique_id of the saved snippet
         const outputShareUrl = window.location.origin + '/share/output/' + data.unique_id; // Use origin for proper root URL
         document.getElementById('shareLink').innerHTML = `
-            <span>Output Link:</span> 
+            <span>Output Link:</span>
             <a href="${outputShareUrl}" target="_blank" class="shareable-link">${outputShareUrl}</a>
             <button onclick="copyToClipboard('${outputShareUrl}')" class="copy-button"><i class="fas fa-clipboard"></i></button>
         `;
@@ -179,7 +139,7 @@ function shareCode() {
         // Update to use the returned unique_id to generate the shareable link
         const shareUrl = window.location.href + 'share/' + data.unique_id; // Adjust if needed
         document.getElementById('shareLink').innerHTML = `
-        <span>Shareable Code Link:</span> 
+        <span>Shareable Code Link:</span>
         <a href="${shareUrl}" target="_blank" class="shareable-link">${shareUrl}</a>
         <button onclick="copyToClipboard('${shareUrl}')" class="copy-button"><i class="fas fa-clipboard"></i></button>
     `;

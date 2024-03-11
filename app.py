@@ -110,6 +110,9 @@ def share(unique_id):
 def share_output(unique_id):
     snippet = Snippet.query.filter_by(unique_id=unique_id).first_or_404()
     return render_template('share_output.html', snippet=snippet)
+@app.route('/sw.js')
+def sw():
+    return app.send_static_file('sw.js')
 
 if __name__ == '__main__':
     app.run(debug=True)
