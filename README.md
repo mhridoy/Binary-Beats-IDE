@@ -15,7 +15,7 @@ Binary Beats IDE is an intuitive, powerful, online integrated development enviro
 
 To start using Binary Beats IDE, visit [Binary Beats](your-live-url-link) and log in with your credentials.
 
-![Login Page Screenshot](link-to-your-login-page-image.jpg)
+![Login Page Screenshot](My-Web-Editor/login.png)
 
 Experience a sleek, distraction-free coding interface:
 
