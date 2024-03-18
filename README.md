@@ -1,6 +1,6 @@
 # Binary Beats IDE
 
-![IDE Screenshot](link-to-your-login-page-image.jpg)
+![IDE Screenshot](login.png)
 
 Binary Beats IDE is an intuitive, powerful, online integrated development environment (IDE) designed to offer an accessible, seamless coding experience. Dive into our web-based editor for an unmatched coding journey, whether you're a beginner or a seasoned developer.
 
