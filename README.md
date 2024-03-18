@@ -42,8 +42,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Got questions or suggestions? Reach out to us on:
 
-- [GitHub](your-github-profile-url)
-- [Twitter](your-twitter-profile-url)
+- [GitHub](https://github.com/mhridoy/Binary-Beats-IDE)
 - [LinkedIn](https://linkedin.com/in/mhridoy)
 
 ---
