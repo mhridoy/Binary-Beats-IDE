@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Snippet Output</title>
-    <style>{{ snippet.css_code }}</style>
+
+        
+        <style>
+            {{ snippet.css_code | safe }}
+            </style>
+
+
 </head>
 <body>
     {{ snippet.html_code | safe }}

@@ -76,26 +76,41 @@ function shareOutput() {
     var cssCode = editors.css.getValue();
     var jsCode = editors.js.getValue();
 
-    // Sending the code to the server to save and generate a shareable link for the output
+    // Packaging the code for sharing
+    var combinedCode = {
+        html_code: htmlCode,
+        css_code: cssCode,
+        js_code: jsCode
+    };
+
+    // Sending the packaged code to the server
     fetch('/save_snippet', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
-        body: JSON.stringify({ html_code: htmlCode, css_code: cssCode, js_code: jsCode })
+        body: JSON.stringify(combinedCode)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
-        // Assuming the server responds with the unique_id of the saved snippet
-        const outputShareUrl = window.location.origin + '/share/output/' + data.unique_id; // Use origin for proper root URL
-        document.getElementById('shareLink').innerHTML = `
-            <span>Output Link:</span>
-            <a href="${outputShareUrl}" target="_blank" class="shareable-link">${outputShareUrl}</a>
-            <button onclick="copyToClipboard('${outputShareUrl}')" class="copy-button"><i class="fas fa-clipboard"></i></button>
-        `;
+        // Check if the server response includes the unique_id
+        if (!data.unique_id) {
+            throw new Error('Response JSON does not include unique_id');
+        }
+        const outputShareUrl = `${window.location.origin}/share/output/${data.unique_id}`;
+        document.getElementById('shareLink').innerHTML = `Output Link: <a href="${outputShareUrl}" target="_blank">${outputShareUrl}</a>`;
+        alert('Share link generated successfully!');
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to generate share link.');
+    });
 }
 
 function copyToClipboard(text) {
@@ -143,6 +158,7 @@ function shareCode() {
         <a href="${shareUrl}" target="_blank" class="shareable-link">${shareUrl}</a>
         <button onclick="copyToClipboard('${shareUrl}')" class="copy-button"><i class="fas fa-clipboard"></i></button>
     `;
+    alert('Share link generated successfully!');
     })
     .catch(error => console.error('Error:', error));
 }

@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Viewport for responsive web design -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Optimization -->
+    <meta name="description" content="Log in to Binary Beats IDE - Your online environment for software development.">
+    <meta name="keywords" content="IDE, Binary Beats, coding, programming, online editor">
+    <meta name="author" content="Binary Beats">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/icons/icon-192x192.png">
+    <link rel="manifest" href="/static/manifest.json">
     <title>Binary Beats IDE</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap">
     <style>
@@ -125,6 +135,63 @@
         @keyframes move {
             0% { top: 0; }
             100% { top: 100%; }
+        }
+
+         /* Responsive Styles */
+         @media only screen and (max-width: 600px) {
+            /* Phones */
+            .login-container {
+                padding: 20px;
+                width: 90%;
+            }
+
+            .title {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+
+            .code-snippet {
+                display: none; /* Hide code snippets on very small screens */
+            }
+
+            input, button {
+                padding: 12px;
+                margin-top: 8px;
+            }
+
+            .login-container form a {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media only screen and (min-width: 601px) and (max-width: 1024px) {
+            /* Tablets */
+            .login-container {
+                width: 50%;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .code-snippet {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media only screen and (min-width: 1025px) {
+            /* Desktops */
+            .login-container {
+                width: 30%;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .code-snippet {
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>

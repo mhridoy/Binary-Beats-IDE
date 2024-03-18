@@ -1,0 +1,1 @@
+const y = foo > 1 ? TechniqueOne(x) : TechniqueTwo(x);
