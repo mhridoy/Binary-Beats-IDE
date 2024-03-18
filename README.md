@@ -13,13 +13,13 @@ Binary Beats IDE is an intuitive, powerful, online integrated development enviro
 
 ## Getting Started 🚀
 
-To start using Binary Beats IDE, visit [Binary Beats](your-live-url-link) and log in with your credentials.
+To start using Binary Beats IDE, visit [Binary Beats](https://codesage.pythonanywhere.com) and log in with your credentials.
 
-![Login Page Screenshot](My-Web-Editor/login.png)
+![Login Page Screenshot](login.png)
 
 Experience a sleek, distraction-free coding interface:
 
-![Editor Screenshot](link-to-your-web-editor-image.jpg)
+![Editor Screenshot](homepage.png)
 
 ## How to Use 🛠️
 
