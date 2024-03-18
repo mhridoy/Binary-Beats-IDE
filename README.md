@@ -20,6 +20,7 @@ To start using Binary Beats IDE, visit [Binary Beats](https://codesage.pythonany
 Experience a sleek, distraction-free coding interface:
 
 ![Editor Screenshot](homepage.png)
+![View My Snippets](saves.png)
 
 ## How to Use 🛠️
 
