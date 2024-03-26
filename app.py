@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from datetime import datetime
 from flask_migrate import Migrate
-
+import string, requests, secrets 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
@@ -113,6 +113,38 @@ def share_output(unique_id):
 @app.route('/sw.js')
 def sw():
     return app.send_static_file('sw.js')
+
+# Dictionary to store the code snippets
+snippet_links = {}
+
+def generate_unique_link():
+    """Generate a unique shareable link"""
+    characters = string.ascii_letters + string.digits
+    unique_id = ''.join(secrets.choice(characters) for _ in range(8))
+    # Adjust this URL to your actual application's domain in production
+    return request.url_root + 'shared/' + unique_id
+
+@app.route('/share_snippet', methods=['POST'])
+def share_snippet():
+    """Generate a unique shareable link for the code snippets"""
+    code_snippets = request.get_json()
+    unique_id = secrets.token_urlsafe(16)  # Generates a URL-safe text string
+    snippet_links[unique_id] = code_snippets  # Store the code snippets in the dictionary
+
+    full_link = url_for('shared_snippet', link_id=unique_id, _external=True)  # Generates a full URL
+    return jsonify({'shareLink': full_link})
+
+@app.route('/shared/<link_id>')
+def shared_snippet(link_id):
+    """Render the shared code snippet"""
+    snippet = snippet_links.get(link_id)
+
+    if snippet:
+        return render_template('shared_snippet.html', snippet=snippet)
+
+    return 'Invalid link', 404
+
+# ... remaining code ...
 
 if __name__ == '__main__':
     app.run(debug=True)

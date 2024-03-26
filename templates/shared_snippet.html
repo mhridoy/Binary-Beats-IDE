@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shared Snippet</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        {{ snippet.cssCode | safe }}
+    </style>
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmY5ODAwIiBkPSJNMzk5LjY3IDI3Mi4ybC0xMTUuMTYgMTEuOTFMMjE1LjY3IDg4LjQ4IDE3OS4yIDI3Mi4yIDY0LjAxIDI4NC4xMiAxODAgMzgwLjExIDE1Ny4yIDQ5Ni42OWwxNTAtNTcuNTYgMTUwIDU3LjU2LTIyLjgxLTExNi41OEwzOTkuNjcgMjcyLjJ6Ii8+PC9zdmc+">
+</head>
+<body>
+    {{ snippet.htmlCode | safe }}
+    <script>
+        {{ snippet.jsCode | safe }}
+    </script>
+</body>
+</html>
