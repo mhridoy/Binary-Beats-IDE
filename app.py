@@ -141,7 +141,7 @@ def google_authorize():
         db.session.commit()
     print('Check: ' ,user.username, '\n')   
     login_user(user)
-    # Log in the user with Flask-Login
+    
     return redirect(url_for('index'))
 
 # Github login route
