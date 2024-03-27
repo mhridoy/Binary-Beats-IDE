@@ -171,7 +171,7 @@ def github_authorize():
         db.session.commit()
     login_user(user)
     # return "You are successfully signed in using github"
-    # Log in the user with Flask-Login
+    
     return redirect(url_for('index'))
     
 @app.route('/logout')
