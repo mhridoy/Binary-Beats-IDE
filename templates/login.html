@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Viewport for responsive web design -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- Viewport for responsive web design -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- SEO Optimization -->
-    <meta name="description" content="Log in to Binary-Beats-IDE - Your online environment for software development.">
-    <meta name="keywords" content="IDE, Binary-Beats-IDE, coding, programming, online editor">
-    <meta name="author" content="Binary-Beats-IDE">
+        <!-- SEO Optimization -->
+        <meta name="description"
+            content="Log in to Binary-Beats-IDE - Your online environment for software development.">
+        <meta name="keywords"
+            content="IDE, Binary-Beats-IDE, coding, programming, online editor">
+        <meta name="author" content="Binary-Beats-IDE">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/static/icons/icon-192x192.png">
-    <link rel="manifest" href="/static/manifest.json">
-    <title>Binary-Beats-IDE</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap">
-    <style>
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon"
+            href="/static/icons/icon-192x192.png">
+        <link rel="manifest" href="/static/manifest.json">
+        <title>Binary-Beats-IDE</title>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap">
+        <style>
         body, html {
             height: 100%;
             margin: 0;
@@ -195,41 +199,52 @@
             }
         }
     </style>
-</head>
-<body>
+    </head>
+    <body>
 
-<div class="title">Binary-Beats-IDE</div>
+        <div class="title">Binary-Beats-IDE</div>
 
-<div class="login-container">
-    <form action="/login" method="post">
-        <input type="text" name="username" placeholder="Username" required autofocus>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Log In</button>
-    </form>
-    <a href="/signup">Don't have an account? Sign up</a>
-</div>
+        <div class="login-container">
+            <form action="/login" method="post">
+                <input type="text" name="username" placeholder="Username"
+                    required autofocus>
+                <input type="password" name="password" placeholder="Password"
+                    required>
+                <button type="submit">Log In</button>
+            </form>
+            <a href="/signup">Don't have an account? Sign up</a>
+            <div class="oauth-box">
+                <div id="oauth-google">
+                    <a href="{{ url_for('google_login') }}">
+                        <img
+                            src="{{ url_for('static', filename='/image/google-logo.png') }}"
+                            width="55px" height="55px" alt="Google logo">
+                    </a>
+                </div>
+            </div>
+        </div>
 
-<div class="code-snippets">
-    <div class="code-snippet" style="left: 10%;">
-        // Welcome to Binary-Beats-IDE
-        function initIDE() {
-            console.log('IDE Initialized');
-        }
-        initIDE();
-    </div>
-    <div class="code-snippet" style="left: 50%;">
-        const express = require('express');
-        const app = express();
-        
-        app.get('/', (req, res) => {
-            res.send('Hello, Binary-Beats-IDE!');
-        });
-        
-        app.listen(3000, () => {
-            console.log('Server is running on port 3000');
-        });
-    </div>
-</div>
+        <div class="code-snippets">
+            <div class="code-snippet" style="left: 10%;">
+                // Welcome to Binary-Beats-IDE
+                function initIDE() {
+                console.log('IDE Initialized');
+                }
+                initIDE();
+            </div>
+            <div class="code-snippet" style="left: 50%;">
+                const express = require('express');
+                const app = express();
 
-</body>
+                app.get('/', (req, res) => {
+                res.send('Hello, Binary-Beats-IDE!');
+                });
+
+                app.listen(3000, () => {
+                console.log('Server is running on port 3000');
+                });
+            </div>
+        </div>
+
+    </body>
 </html>
