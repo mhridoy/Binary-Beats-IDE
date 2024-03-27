@@ -71,6 +71,7 @@ class Snippet(db.Model):
     user = db.relationship('User', backref=db.backref('snippets', lazy=True))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -108,7 +109,6 @@ def signup():
         flash('Account created successfully, please login.')
         return redirect(url_for('login'))
     return render_template('signup.html')
-
 
 
 
