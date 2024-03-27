@@ -12,8 +12,10 @@ from authlib.integrations.flask_client import OAuth
 app = Flask(__name__)
 oauth = OAuth(app)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['GOOGLE_CLIENT_ID'] = "google-client-id-here"
-app.config['GOOGLE_CLIENT_SECRET'] = "google-client-secret-here"
+app.config['GOOGLE_CLIENT_ID'] = "your-google-client-id"
+app.config['GOOGLE_CLIENT_SECRET'] = "your-google-client-secret"
+app.config['GITHUB_CLIENT_ID'] = "your-github-client-id"
+app.config['GITHUB_CLIENT_SECRET'] = "your-github-client-secret"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -32,6 +34,19 @@ google = oauth.register(
     userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
     client_kwargs={'scope': 'openid email profile'},
     jwks_uri = "https://www.googleapis.com/oauth2/v3/certs"
+)
+
+
+github = oauth.register (
+  name = 'github',
+    client_id = app.config["GITHUB_CLIENT_ID"],
+    client_secret = app.config["GITHUB_CLIENT_SECRET"],
+    access_token_url = 'https://github.com/login/oauth/access_token',
+    access_token_params = None,
+    authorize_url = 'https://github.com/login/oauth/authorize',
+    authorize_params = None,
+    api_base_url = 'https://api.github.com/',
+    client_kwargs = {'scope': 'user:email'},
 )
 
 db = SQLAlchemy(app)
@@ -129,6 +144,36 @@ def google_authorize():
     # Log in the user with Flask-Login
     return redirect(url_for('index'))
 
+# Github login route
+@app.route('/login/github')
+def github_login():
+    github = oauth.create_client('github')
+    redirect_uri = url_for('github_authorize', _external=True)
+    return github.authorize_redirect(redirect_uri)
+
+
+# Github authorize route
+@app.route('/login/github/authorize')
+def github_authorize():
+    github = oauth.create_client('github')
+    token = github.authorize_access_token()
+    resp = github.get('user').json()
+    
+    user = User.query.filter_by(username=resp['login']).first()
+    
+    if not user:
+        # If the user doesn't exist, create a new one
+        user = User(
+            username=resp['login']
+            # Other fields...
+        )
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
+    # return "You are successfully signed in using github"
+    # Log in the user with Flask-Login
+    return redirect(url_for('index'))
+    
 @app.route('/logout')
 @login_required
 def logout():
