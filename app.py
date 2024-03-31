@@ -6,6 +6,8 @@ import uuid
 from datetime import datetime
 from flask_migrate import Migrate
 import string, requests, secrets 
+import os 
+from flask_dance.contrib.google import make_google_blueprint, google
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
@@ -18,10 +20,23 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
+
+google_blueprint = make_google_blueprint(
+    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
+    scope=["profile", "email"],
+    redirect_to="index"  # Or where you want to redirect after Google login
+)
+
+app.register_blueprint(google_blueprint, url_prefix="/login")
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
+    google_id = db.Column(db.String(150), unique=True, nullable=True)
+    
 
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
