@@ -6,15 +6,8 @@ import uuid
 from datetime import datetime
 from flask_migrate import Migrate
 
-<<<<<<< HEAD
-import os, string, secrets
-from dotenv import load_dotenv
-
-=======
       
->>>>>>> github-desktop-mdfarhansadiq/main
-from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file
+
 
 app = Flask(__name__)
 
@@ -28,8 +21,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
-<<<<<<< HEAD
-=======
       
 google = oauth.register(
     name='google',
@@ -57,7 +48,6 @@ github = oauth.register (
     api_base_url = 'https://api.github.com/',
     client_kwargs = {'scope': 'user:email'},
 )
->>>>>>> github-desktop-mdfarhansadiq/main
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -130,8 +120,6 @@ def signup():
 
 
 
-<<<<<<< HEAD
-=======
 # Google authorize route
 @app.route('/login/google/authorize')
 def google_authorize():
@@ -183,7 +171,6 @@ def github_authorize():
     login_user(user)
     # return "You are successfully signed in using github"
     return redirect(url_for('index'))
->>>>>>> github-desktop-mdfarhansadiq/main
     
 @app.route('/logout')
 @login_required
