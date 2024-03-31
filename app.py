@@ -17,10 +17,10 @@ load_dotenv()  # Load environment variables from .env file
 app = Flask(__name__)
 oauth = OAuth(app)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['GOOGLE_CLIENT_ID'] = 'GOOGLE_CLIENT_ID'
-app.config['GOOGLE_CLIENT_SECRET'] = "GOOGLE_CLIENT_SECRET"
-app.config['GITHUB_CLIENT_ID'] = "GITHUB_CLIENT_ID"
-app.config['GITHUB_CLIENT_SECRET'] = "GITHUB_CLIENT_SECRET"
+app.config['GOOGLE_CLIENT_ID'] = "google-client-id"
+app.config['GOOGLE_CLIENT_SECRET'] = "google-client-secret-key"
+app.config['GITHUB_CLIENT_ID'] = "github-client-id"
+app.config['GITHUB_CLIENT_SECRET'] = "github-client-secret-key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -176,7 +176,6 @@ def github_authorize():
         db.session.commit()
     login_user(user)
     # return "You are successfully signed in using github"
-    
     return redirect(url_for('index'))
     
 @app.route('/logout')
@@ -254,5 +253,7 @@ def shared_snippet(link_id):
 
 # ... remaining code ...
 
+
 if __name__ == '__main__':
     app.run(debug=True)
+    
