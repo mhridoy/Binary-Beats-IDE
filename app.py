@@ -26,7 +26,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
-    
       
 google = oauth.register(
     name='google',
@@ -66,7 +65,6 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-
 
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -254,6 +252,6 @@ def shared_snippet(link_id):
     return 'Invalid link', 404
 
 # ... remaining code ...
+
 if __name__ == '__main__':
     app.run(debug=True)
-    
