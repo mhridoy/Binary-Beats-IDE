@@ -5,17 +5,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from datetime import datetime
 from flask_migrate import Migrate
-
+import string, requests, secrets
+import google.oauth2.credentials
+import google_auth_oauthlib.flow
+from authlib.integrations.flask_client import OAuth
+import os
       
-
-
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 app = Flask(__name__)
-
+oauth = OAuth(app)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['GOOGLE_CLIENT_ID'] = "google-client-id"
-app.config['GOOGLE_CLIENT_SECRET'] = "google-client-secret-key"
-app.config['GITHUB_CLIENT_ID'] = "github-client-id"
-app.config['GITHUB_CLIENT_SECRET'] = "github-client-secret-key"
+app.config['GOOGLE_CLIENT_ID'] = 'GOOGLE_CLIENT_ID'
+app.config['GOOGLE_CLIENT_SECRET'] = "GOOGLE_CLIENT_SECRET"
+app.config['GITHUB_CLIENT_ID'] = "GITHUB_CLIENT_ID"
+app.config['GITHUB_CLIENT_SECRET'] = "GITHUB_CLIENT_SECRET"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -56,15 +60,10 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-
-
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-    
-    
 
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -118,6 +117,12 @@ def signup():
 
 
 
+# Google login route
+@app.route('/login/google')
+def google_login():
+    google = oauth.create_client('google')
+    redirect_url = url_for('google_authorize', _external=True)
+    return google.authorize_redirect(redirect_url)
 
 
 # Google authorize route
@@ -170,6 +175,7 @@ def github_authorize():
         db.session.commit()
     login_user(user)
     # return "You are successfully signed in using github"
+    
     return redirect(url_for('index'))
     
 @app.route('/logout')
