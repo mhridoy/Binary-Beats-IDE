@@ -5,19 +5,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from datetime import datetime
 from flask_migrate import Migrate
+import string, requests, secrets
+import google.oauth2.credentials
+import google_auth_oauthlib.flow
+from authlib.integrations.flask_client import OAuth
+import os
 
-<<<<<<< HEAD
-import os, string, secrets
-from dotenv import load_dotenv
-
-=======
       
->>>>>>> github-desktop-mdfarhansadiq/main
 from dotenv import load_dotenv
 load_dotenv()  # Load environment variables from .env file
-
 app = Flask(__name__)
-
+oauth = OAuth(app)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['GOOGLE_CLIENT_ID'] = "google-client-id"
 app.config['GOOGLE_CLIENT_SECRET'] = "google-client-secret-key"
@@ -28,8 +26,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
-<<<<<<< HEAD
-=======
       
 google = oauth.register(
     name='google',
@@ -57,7 +53,6 @@ github = oauth.register (
     api_base_url = 'https://api.github.com/',
     client_kwargs = {'scope': 'user:email'},
 )
->>>>>>> github-desktop-mdfarhansadiq/main
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -66,15 +61,10 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-
-
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-    
-    
 
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -128,10 +118,14 @@ def signup():
 
 
 
+# Google login route
+@app.route('/login/google')
+def google_login():
+    google = oauth.create_client('google')
+    redirect_url = url_for('google_authorize', _external=True)
+    return google.authorize_redirect(redirect_url)
 
 
-<<<<<<< HEAD
-=======
 # Google authorize route
 @app.route('/login/google/authorize')
 def google_authorize():
@@ -183,7 +177,6 @@ def github_authorize():
     login_user(user)
     # return "You are successfully signed in using github"
     return redirect(url_for('index'))
->>>>>>> github-desktop-mdfarhansadiq/main
     
 @app.route('/logout')
 @login_required
@@ -262,3 +255,4 @@ def shared_snippet(link_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
