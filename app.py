@@ -9,13 +9,18 @@ import string, requests, secrets
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 from authlib.integrations.flask_client import OAuth
+import os
+
+
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 app = Flask(__name__)
 oauth = OAuth(app)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['GOOGLE_CLIENT_ID'] = "your-google-client-id"
-app.config['GOOGLE_CLIENT_SECRET'] = "your-google-client-secret"
-app.config['GITHUB_CLIENT_ID'] = "your-github-client-id"
-app.config['GITHUB_CLIENT_SECRET'] = "your-github-client-secret"
+app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID')
+app.config['GOOGLE_CLIENT_SECRET'] = os.environ.get('GOOGLE_CLIENT_SECRET')
+app.config['GITHUB_CLIENT_ID'] = os.environ.get('GITHUB_CLIENT_ID')
+app.config['GITHUB_CLIENT_SECRET'] = os.environ.get('GITHUB_CLIENT_SECRET')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
