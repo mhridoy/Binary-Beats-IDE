@@ -5,13 +5,25 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from datetime import datetime
 from flask_migrate import Migrate
-import string, requests, secrets 
-import os 
-from flask_dance.contrib.google import make_google_blueprint, google
+
+import os, string, secrets
+from dotenv import load_dotenv
+
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+
 app = Flask(__name__)
+
 app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID')
+app.config['GOOGLE_CLIENT_SECRET'] = os.environ.get('GOOGLE_CLIENT_SECRET')
+app.config['GITHUB_CLIENT_ID'] = os.environ.get('GITHUB_CLIENT_ID')
+app.config['GITHUB_CLIENT_SECRET'] = os.environ.get('GITHUB_CLIENT_SECRET')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -22,20 +34,12 @@ login_manager.login_view = 'login'
 
 
 
-google_blueprint = make_google_blueprint(
-    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
-    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-    scope=["profile", "email"],
-    redirect_to="index"  # Or where you want to redirect after Google login
-)
-
-app.register_blueprint(google_blueprint, url_prefix="/login")
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-    google_id = db.Column(db.String(150), unique=True, nullable=True)
+    
     
 
 class Snippet(db.Model):
@@ -47,6 +51,7 @@ class Snippet(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', backref=db.backref('snippets', lazy=True))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -86,6 +91,12 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html')
 
+
+
+
+
+
+    
 @app.route('/logout')
 @login_required
 def logout():
