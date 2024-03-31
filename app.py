@@ -6,24 +6,58 @@ import uuid
 from datetime import datetime
 from flask_migrate import Migrate
 
+<<<<<<< HEAD
 import os, string, secrets
 from dotenv import load_dotenv
 
+=======
+      
+>>>>>>> github-desktop-mdfarhansadiq/main
 from dotenv import load_dotenv
 load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID')
-app.config['GOOGLE_CLIENT_SECRET'] = os.environ.get('GOOGLE_CLIENT_SECRET')
-app.config['GITHUB_CLIENT_ID'] = os.environ.get('GITHUB_CLIENT_ID')
-app.config['GITHUB_CLIENT_SECRET'] = os.environ.get('GITHUB_CLIENT_SECRET')
+app.config['GOOGLE_CLIENT_ID'] = "google-client-id"
+app.config['GOOGLE_CLIENT_SECRET'] = "google-client-secret-key"
+app.config['GITHUB_CLIENT_ID'] = "github-client-id"
+app.config['GITHUB_CLIENT_SECRET'] = "github-client-secret-key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
+<<<<<<< HEAD
+=======
+      
+google = oauth.register(
+    name='google',
+    client_id=app.config['GOOGLE_CLIENT_ID'],
+    client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    authorize_params=None,
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
+    client_kwargs={'scope': 'openid email profile'},
+    jwks_uri = "https://www.googleapis.com/oauth2/v3/certs"
+)
+
+
+github = oauth.register (
+  name = 'github',
+    client_id = app.config["GITHUB_CLIENT_ID"],
+    client_secret = app.config["GITHUB_CLIENT_SECRET"],
+    access_token_url = 'https://github.com/login/oauth/access_token',
+    access_token_params = None,
+    authorize_url = 'https://github.com/login/oauth/authorize',
+    authorize_params = None,
+    api_base_url = 'https://api.github.com/',
+    client_kwargs = {'scope': 'user:email'},
+)
+>>>>>>> github-desktop-mdfarhansadiq/main
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -96,6 +130,60 @@ def signup():
 
 
 
+<<<<<<< HEAD
+=======
+# Google authorize route
+@app.route('/login/google/authorize')
+def google_authorize():
+    google = oauth.create_client('google')  # Reuse the OAuth client
+    token = google.authorize_access_token()  # Retrieve the access token
+    resp = google.get('userinfo').json()  # Use the token to fetch the user info
+    # print(resp.keys())
+    # Assuming 'sub' is the unique identifier for the user in Google's response
+    user = User.query.filter_by(username=resp['email']).first()
+    
+    if not user:
+        # If the user doesn't exist, create a new one
+        user = User(
+            username=resp['email']
+            # Other fields...
+        )
+        db.session.add(user)
+        db.session.commit()
+    print('Check: ' ,user.username, '\n')   
+    login_user(user)
+    
+    return redirect(url_for('index'))
+
+# Github login route
+@app.route('/login/github')
+def github_login():
+    github = oauth.create_client('github')
+    redirect_uri = url_for('github_authorize', _external=True)
+    return github.authorize_redirect(redirect_uri)
+
+
+# Github authorize route
+@app.route('/login/github/authorize')
+def github_authorize():
+    github = oauth.create_client('github')
+    token = github.authorize_access_token()
+    resp = github.get('user').json()
+    
+    user = User.query.filter_by(username=resp['login']).first()
+    
+    if not user:
+        # If the user doesn't exist, create a new one
+        user = User(
+            username=resp['login']
+            # Other fields...
+        )
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
+    # return "You are successfully signed in using github"
+    return redirect(url_for('index'))
+>>>>>>> github-desktop-mdfarhansadiq/main
     
 @app.route('/logout')
 @login_required
@@ -174,3 +262,4 @@ def shared_snippet(link_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
