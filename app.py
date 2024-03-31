@@ -26,6 +26,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
+   
       
 google = oauth.register(
     name='google',
@@ -65,6 +66,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
+
 
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -124,6 +126,7 @@ def google_login():
     google = oauth.create_client('google')
     redirect_url = url_for('google_authorize', _external=True)
     return google.authorize_redirect(redirect_url)
+
 
 
 # Google authorize route
