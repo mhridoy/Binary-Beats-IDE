@@ -21,7 +21,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
-
+      
 google = oauth.register(
     name='google',
     client_id=app.config['GOOGLE_CLIENT_ID'],
