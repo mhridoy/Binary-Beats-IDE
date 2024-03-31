@@ -17,10 +17,10 @@ load_dotenv()  # Load environment variables from .env file
 app = Flask(__name__)
 oauth = OAuth(app)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID')
-app.config['GOOGLE_CLIENT_SECRET'] = os.environ.get('GOOGLE_CLIENT_SECRET')
-app.config['GITHUB_CLIENT_ID'] = os.environ.get('GITHUB_CLIENT_ID')
-app.config['GITHUB_CLIENT_SECRET'] = os.environ.get('GITHUB_CLIENT_SECRET')
+app.config['GOOGLE_CLIENT_ID'] = "google-client-id"
+app.config['GOOGLE_CLIENT_SECRET'] = "google-client-secret-key"
+app.config['GITHUB_CLIENT_ID'] = "github-client-id"
+app.config['GITHUB_CLIENT_SECRET'] = "github-client-secret-key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
