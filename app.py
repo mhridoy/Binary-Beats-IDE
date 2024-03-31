@@ -176,7 +176,6 @@ def github_authorize():
         db.session.commit()
     login_user(user)
     # return "You are successfully signed in using github"
-    
     return redirect(url_for('index'))
     
 @app.route('/logout')
