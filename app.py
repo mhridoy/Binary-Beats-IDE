@@ -90,6 +90,7 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -99,13 +100,12 @@ def login():
             return redirect(url_for('index'))
         flash('Invalid username or password')
         
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
     
     return render_template('login.html')
     
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -119,9 +119,6 @@ def signup():
         db.session.commit()
         flash('Account created successfully, please login.')
         return redirect(url_for('login'))
-    
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
     
     
     return render_template('signup.html')
