@@ -106,6 +106,10 @@ def login():
     
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    if not current_user.is_authenticated:
+        return render_template('signup.html')
+    
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -119,7 +123,8 @@ def signup():
         db.session.commit()
         flash('Account created successfully, please login.')
         return redirect(url_for('login'))
-    return render_template('signup.html')
+    
+    return redirect(url_for('index'))
 
 
 
@@ -171,7 +176,6 @@ def github_authorize():
     github = oauth.create_client('github')
     token = github.authorize_access_token()
     resp = github.get('user').json()
-    
     user = User.query.filter_by(username=resp['login']).first()
     
     if not user:
@@ -264,11 +268,6 @@ def shared_snippet(link_id):
         return render_template('shared_snippet.html', snippet=snippet)
 
     return 'Invalid link', 404
-
-
-
-
-
 
 
 # ... remaining code ...
