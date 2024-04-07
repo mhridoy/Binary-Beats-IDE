@@ -2,6 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- Viewport for responsive web design -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <!-- SEO Optimization -->
@@ -11,166 +13,278 @@
             content="IDE, Binary-Beats-IDE, coding, programming, online editor">
         <meta name="author" content="Binary-Beats-IDE">
 
-        <title>Signup | Binary-Beats-IDE</title>
+        <!-- Favicon -->
         <link rel="icon" type="image/x-icon"
             href="/static/icons/icon-192x192.png">
+        <link rel="manifest" href="/static/manifest.json">
+        <title>Binary-Beats-IDE</title>
         <link rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap">
         <style>
-        /* Base styles */
         body, html {
-            margin: 0;
-            padding: 0;
             height: 100%;
-            background-color: #010710;
+            margin: 0;
+            background: #071121;
             font-family: 'Roboto', sans-serif;
-            color: #64FFDA;
-        }
-        .code-snippets {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #0A192F;
-            z-index: 1;
-            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
             overflow: hidden;
-            line-height: 1.5;
-            font-family: 'Courier New', Courier, monospace;
-            opacity: 0.5;
         }
-        .code-snippet {
-            position: absolute;
-            white-space: pre;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 100%;
-            font-size: 12px;
-            color: #64FFDA;
-            animation: slide-up 20s linear infinite;
-            white-space: pre; /* Ensures that whitespace and new lines are preserved */
-            overflow: hidden;
-            display: block;
-        }
-        .oauth-icons {
-    display: flex;
-    justify-content: center; /* Center the icons horizontally */
-    align-items: center; /* Align the icons vertically */
-    gap: 20px; /* Adjust the space between the icons as needed */
-        }
-        @keyframes slide-up {
-            from {
-                top: 100%;
-            }
-            to {
-                top: -200%; /* Adjust based on the actual height of your content */
-            }
-        }
-        .container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+
+        .login-container {
+            background: rgba(6, 14, 26, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
             padding: 40px;
-            border-radius: 10px;
-            background: rgba(7, 17, 32, 0.95);
             text-align: center;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            z-index: 2;
+            position: relative;
+            z-index: 10;
+            transition: transform 0.3s ease;
         }
-        /* Input and Button Styles */
+
+        .login-container:hover {
+            transform: scale(1.05);
+        }
+
         input, button {
-            width: calc(100% - 20px);
-            padding: 16px;
-            margin: 10px 0;
-            background-color: #112240;
-            border: 1px solid #2a9d8f;
-            color: #64FFDA;
+            width: 80%;
+            padding: 15px;
+            margin-top: 10px;
             border-radius: 5px;
-            font-size: 16px;
+            border: none;
+            background: #112240;
+            color: #64FFDA;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
         }
+
+        input::placeholder {
+            color: #8892b0;
+        }
+
         input:focus, button:focus {
             outline: none;
-            border-color: #307766;
-            box-shadow: 0 0 8px #64FFDA;
+            background: #233554;
         }
+
         button {
             background: #64FFDA;
             color: #0A192F;
             font-weight: 600;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #52acb8;
             color: #ffffff;
         }
+
         a {
+            display: inline-block;
+            margin-top: 15px;
             color: #64FFDA;
             text-decoration: none;
-            transition: color 0.3s;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
         }
+
         a:hover {
-            text-decoration: underline;
-            color: #8892b0;
+            color: #a8b2d1;
         }
-        .form-title {
-            margin-bottom: 30px;
+
+        /* Animation for title */
+        .title {
+            font-size: 2.5rem;
             color: #64FFDA;
-            font-size: 24px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.7);
+            animation: fadeIn 2s ease-in-out;
         }
-        /* Responsive styles */
-        @media (max-width: 600px) {
-            .container {
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styling and animation for code snippets */
+        .code-snippets {
+            font-family: 'Courier New', Courier, monospace;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+            white-space: pre;
+            opacity: 0.5;
+            z-index: 5;
+            color: #64FFDA;
+            line-height: 1.5;
+            transition: opacity 0.5s ease;
+        }
+
+        .code-snippet {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            text-align: left;
+            font-size: 0.8em;
+            opacity: 0.7;
+            animation: move 12s infinite alternate ease-in-out;
+        }
+        .oauth-icons {
+    display: flex;
+    justify-content: center; /* Center the icons horizontally */
+    align-items: center; /* Align the icons vertically */
+    gap: 20px; /* Adjust the space between the icons as needed */
+}
+
+        @keyframes move {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+         /* Responsive Styles */
+         @media only screen and (max-width: 600px) {
+            /* Phones */
+            .login-container {
                 padding: 20px;
-                border-radius: 5px;
+                width: 90%;
             }
-            .form-title {
-                font-size: 20px;
+
+            .title {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
             }
+
             .code-snippet {
-                font-size: 10px;
+                display: none; /* Hide code snippets on very small screens */
+            }
+
+            input, button {
+                padding: 12px;
+                margin-top: 8px;
+            }
+
+            .login-container form a {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media only screen and (min-width: 601px) and (max-width: 1024px) {
+            /* Tablets */
+            .login-container {
+                width: 50%;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .code-snippet {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media only screen and (min-width: 1025px) {
+            /* Desktops */
+            .login-container {
+                width: 30%;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .code-snippet {
+                font-size: 0.8rem;
             }
         }
     </style>
     </head>
     <body>
-        <div class="code-snippets">
-            <div class="code-snippet">
-                // Binary-Beats-IDE Signup\nfunction initSignup() {\n
-                console.log('Signup process starts here.');\n}\ninitSignup();\n\n//
-                Additional snippets\nfunction validateForm() {\n // Validation
-                code\n}\n\nfunction submitForm() {\n // Submission code\n}
-            </div>
-        </div>
-        <div class="container">
-            <div class="form-title">Sign Up for Binary-Beats-IDE</div>
-            <form action="/signup" method="post">
+
+        <div class="title">Binary-Beats-IDE</div>
+
+        <div class="login-container" id="login-form" style="display: none;">
+            <form action="/login" method="post">
                 <input type="text" name="username" placeholder="Username"
-                    required>
+                    required autofocus>
                 <input type="password" name="password" placeholder="Password"
                     required>
-                <button type="submit">Sign Up</button>
+                <button type="submit">Log In</button>
             </form>
-            <a href="/login">Already have an account? Log In</a>
-            <br>
+            <a href="#" onclick="signupForm()">Don't have an account? Sign up</a>
             <div class="oauth-box">
                 <h3>Signin with</h3>
                 <div class="oauth-icons">
                     <a href="{{ url_for('google_login') }}">
-                        <img
-                            src="{{ url_for('static', filename='/image/google-logo.png') }}"
-                            width="55px" height="55px" alt="Google logo">
+                        <img src="{{ url_for('static', filename='/image/google-logo.png') }}" width="55px" height="55px" alt="Google logo">
                     </a>
                     <a href="{{ url_for('github_login') }}">
-                        <img
-                            src="{{ url_for('static', filename='/image/github-logo.png') }}"
-                            width="41px" height="42px" alt="Github logo">
+                        <img src="{{ url_for('static', filename='/image/github-logo.png') }}" width="41px" height="42px" alt="Github logo">
                     </a>
                 </div>
             </div>
         </div>
+        <div class="login-container" id="signup-form" style="display: block;">
+            <form action="/signup" method="post">
+                <input type="text" name="username" placeholder="Username"
+                    required autofocus>
+                <input type="password" name="password" placeholder="Password"
+                    required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <a href="#" onclick="loginForm()">Don't have an account? Log In</a>
+            <div class="oauth-box">
+                <h3>Signin with</h3>
+                <div class="oauth-icons">
+                    <a href="{{ url_for('google_login') }}">
+                        <img src="{{ url_for('static', filename='/image/google-logo.png') }}" width="55px" height="55px" alt="Google logo">
+                    </a>
+                    <a href="{{ url_for('github_login') }}">
+                        <img src="{{ url_for('static', filename='/image/github-logo.png') }}" width="41px" height="42px" alt="Github logo">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="code-snippets">
+            <div class="code-snippet" style="left: 10%;">
+                // Welcome to Binary-Beats-IDE
+                function initIDE() {
+                console.log('IDE Initialized');
+                }
+                initIDE();
+            </div>
+            <div class="code-snippet" style="left: 50%;">
+                const express = require('express');
+                const app = express();
+
+                app.get('/', (req, res) => {
+                res.send('Hello, Binary-Beats-IDE!');
+                });
+
+                app.listen(3000, () => {
+                console.log('Server is running on port 3000');
+                });
+            </div>
+        </div>
+
+        <script>
+            function loginForm()
+            {
+                document.getElementById('signup-form').style.display = 'none';
+                document.getElementById('login-form').style.display = 'block';
+            }
+            function signupForm()
+            {
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('signup-form').style.display = 'block';
+            }
+        </script>
     </body>
 </html>

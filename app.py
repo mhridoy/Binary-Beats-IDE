@@ -88,6 +88,14 @@ def load_user(user_id):
 def index():
     return render_template('index.html', user=current_user)
 
+@app.route('/ideengine', methods=['GET'])
+def home():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    return render_template('home.html')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -135,7 +143,6 @@ def google_login():
     redirect_url = url_for('google_authorize', _external=True)
     return google.authorize_redirect(redirect_url)
 
-
 # Google authorize route
 @app.route('/login/google/callback')
 def google_authorize():
@@ -166,9 +173,6 @@ def github_login():
     redirect_uri = url_for('github_authorize', _external=True)
     return github.authorize_redirect(redirect_uri)
 
-
-
-
 # Github authorize route
 @app.route('/login/github/callback')
 def github_authorize():
@@ -188,12 +192,12 @@ def github_authorize():
     login_user(user)
     # return "You are successfully signed in using github"
     return redirect(url_for('index'))
-    
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 @app.route('/save_snippet', methods=['POST'])
 @login_required
@@ -232,7 +236,6 @@ def share_output(unique_id):
 def sw():
     return app.send_static_file('sw.js')
 
-
 # Dictionary to store the code snippets
 snippet_links = {}
 
@@ -242,7 +245,6 @@ def generate_unique_link():
     unique_id = ''.join(secrets.choice(characters) for _ in range(8))
     # Adjust this URL to your actual application's domain in production
     return request.url_root + 'shared/' + unique_id
-
 
 
 @app.route('/share_snippet', methods=['POST'])
@@ -255,8 +257,6 @@ def share_snippet():
     full_link = url_for('shared_snippet', link_id=unique_id, _external=True)  # Generates a full URL
     return jsonify({'shareLink': full_link})
 
-
-
 @app.route('/shared/<link_id>')
 def shared_snippet(link_id):
     """Render the shared code snippet"""
@@ -266,10 +266,6 @@ def shared_snippet(link_id):
         return render_template('shared_snippet.html', snippet=snippet)
 
     return 'Invalid link', 404
-
-
-
-
 
 # ... remaining code ...
 
