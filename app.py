@@ -234,7 +234,6 @@ def sw():
     return app.send_static_file('sw.js')
 
 
-
 # Dictionary to store the code snippets
 snippet_links = {}
 
@@ -268,6 +267,7 @@ def shared_snippet(link_id):
         return render_template('shared_snippet.html', snippet=snippet)
 
     return 'Invalid link', 404
+
 
 
 
