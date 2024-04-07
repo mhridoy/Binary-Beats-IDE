@@ -12,6 +12,8 @@ from authlib.integrations.flask_client import OAuth
 import os
 
       
+      
+      
 from dotenv import load_dotenv
 load_dotenv()  # Load environment variables from .env file
 app = Flask(__name__)
@@ -88,6 +90,9 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if not current_user.is_authenticated:
+        return render_template('login.html')
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -96,8 +101,9 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         flash('Invalid username or password')
-    return render_template('login.html')
-
+        
+    return redirect(url_for('index'))    
+    
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -127,7 +133,7 @@ def google_login():
 
 
 # Google authorize route
-@app.route('/login/google/authorize')
+@app.route('/login/google/callback')
 def google_authorize():
     google = oauth.create_client('google')  # Reuse the OAuth client
     token = google.authorize_access_token()  # Retrieve the access token
@@ -157,8 +163,10 @@ def github_login():
     return github.authorize_redirect(redirect_uri)
 
 
+
+
 # Github authorize route
-@app.route('/login/github/authorize')
+@app.route('/login/github/callback')
 def github_authorize():
     github = oauth.create_client('github')
     token = github.authorize_access_token()
@@ -221,6 +229,8 @@ def share_output(unique_id):
 def sw():
     return app.send_static_file('sw.js')
 
+
+
 # Dictionary to store the code snippets
 snippet_links = {}
 
@@ -230,6 +240,8 @@ def generate_unique_link():
     unique_id = ''.join(secrets.choice(characters) for _ in range(8))
     # Adjust this URL to your actual application's domain in production
     return request.url_root + 'shared/' + unique_id
+
+
 
 @app.route('/share_snippet', methods=['POST'])
 def share_snippet():
@@ -241,6 +253,8 @@ def share_snippet():
     full_link = url_for('shared_snippet', link_id=unique_id, _external=True)  # Generates a full URL
     return jsonify({'shareLink': full_link})
 
+
+
 @app.route('/shared/<link_id>')
 def shared_snippet(link_id):
     """Render the shared code snippet"""
@@ -251,9 +265,13 @@ def shared_snippet(link_id):
 
     return 'Invalid link', 404
 
-# ... remaining code ...
 
+
+
+
+
+
+# ... remaining code ...
 
 if __name__ == '__main__':
     app.run(debug=True)
-    

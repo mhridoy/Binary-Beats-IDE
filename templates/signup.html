@@ -53,6 +53,12 @@
             overflow: hidden;
             display: block;
         }
+        .oauth-icons {
+    display: flex;
+    justify-content: center; /* Center the icons horizontally */
+    align-items: center; /* Align the icons vertically */
+    gap: 20px; /* Adjust the space between the icons as needed */
+        }
         @keyframes slide-up {
             from {
                 top: 100%;
@@ -151,16 +157,13 @@
             <a href="/login">Already have an account? Log In</a>
             <br>
             <div class="oauth-box">
-                <h3 style="color: #ffffff;">Signin with</h3>
-                <div id="oauth-google">
+                <h3>Signin with</h3>
+                <div class="oauth-icons">
                     <a href="{{ url_for('google_login') }}">
                         <img
                             src="{{ url_for('static', filename='/image/google-logo.png') }}"
                             width="55px" height="55px" alt="Google logo">
                     </a>
-                </div>
-                
-                <div>
                     <a href="{{ url_for('github_login') }}">
                         <img
                             src="{{ url_for('static', filename='/image/github-logo.png') }}"
