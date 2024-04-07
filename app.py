@@ -90,9 +90,6 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if not current_user.is_authenticated:
-        return render_template('login.html')
-    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -102,14 +99,13 @@ def login():
             return redirect(url_for('index'))
         flash('Invalid username or password')
         
-    return redirect(url_for('index'))    
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    return render_template('login.html')
     
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if not current_user.is_authenticated:
-        return render_template('signup.html')
-    
-    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -124,9 +120,12 @@ def signup():
         flash('Account created successfully, please login.')
         return redirect(url_for('login'))
     
-    return redirect(url_for('index'))
-
-
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    
+    return render_template('signup.html')
+    
 
 
 # Google login route
