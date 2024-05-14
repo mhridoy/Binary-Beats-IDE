@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
     <meta charset="UTF-8">
-    <!-- Update the title to include your main keyword -->
-    
-
-    <!-- Viewport for responsive web design -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- SEO Optimization -->
     <meta name="description" content="Binary Beats IDE - Your online environment for software development.">
-    <meta name="keywords" content="IDE, Binary Beats, coding, programming, online editor">
     <meta name="author" content="Binary Beats">
     <title>Binary Beats IDE</title>
-       <!-- Favicon -->
-       <link rel="icon" type="image/x-icon" href="/static/icons/icon-192x192.png">
-       <link rel="manifest" href="/static/manifest.json">
+    <link rel="icon" type="image/x-icon" href="/static/icons/icon-192x192.png">
+    <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
+    <div id="popup" class="popup-container" style="display:none;">
+        <div class="popup-content">
+            <span class="close-button">&times;</span>
+            <img src="https://i.ibb.co/8DnB4Sk/Whats-App-Image-2024-04-05-at-00-32-15.jpg" alt="Popup Image" style="width:100%;">
+        </div>
+    </div>
 <div id="topbar">
     <div class="topbar-content">
         <h2> <i class="fas fa-code"></i> Binary Beats </h2>
@@ -57,8 +54,30 @@
     <div id="jsEditor" class="editor" style="display: none;"></div>
     <div class="resize" onmousedown="initResize(event)"></div>
     <iframe id="output"></iframe>
+
+
 </div>
 
 <script src="static/js/script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Directly open the popup without checking localStorage
+        openPopup();
+
+        document.querySelector('.close-button').onclick = function() {
+            document.getElementById('popup').style.display = "none";
+        };
+    });
+
+    function openPopup() {
+        document.getElementById('popup').style.display = "block";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('popup')) {
+            document.getElementById('popup').style.display = "none";
+        }
+    }
+    </script>
 </body>
 </html>

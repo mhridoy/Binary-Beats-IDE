@@ -3,7 +3,7 @@ var editors = {};
 var isResizing = false;
 var lastKnownMouseX = 0;
 var animationFrameRequested = false;
-
+var autoRunTimeout;
 
 function initMonaco() {
     require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
@@ -30,9 +30,16 @@ function initMonaco() {
         // Show HTML editor by default
         currentEditor = 'html';
         document.getElementById('htmlEditor').style.display = 'block';
+        
+        // Setup automatic run for each editor
+        Object.keys(editors).forEach(function (editorKey) {
+            editors[editorKey].onDidChangeModelContent(function () {
+                clearTimeout(autoRunTimeout);
+                autoRunTimeout = setTimeout(runCode, 500); // Run code 500 ms after the last edit
+            });
+        });
     });
 }
-
 
 function showEditor(lang) {
     Object.keys(editors).forEach(function(key) {
@@ -58,9 +65,7 @@ function runCode() {
     iframe.close();
 }
 
-
 function saveCode() {
-
     localStorage.setItem('htmlCode', editors.html.getValue());
     localStorage.setItem('cssCode', editors.css.getValue());
     localStorage.setItem('jsCode', editors.js.getValue());
@@ -133,41 +138,6 @@ function changeZoom(direction) {
     editors.js.updateOptions({ 'fontSize': currentFontSize });
 }
 
-
-function shareCode() {
-    var htmlCode = editors.html.getValue();
-    var cssCode = editors.css.getValue();
-    var jsCode = editors.js.getValue();
-
-    // Sending the code to the server to save and generate a shareable link
-    fetch('/save_snippet', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            // Add CSRF token header if you're using CSRF protection
-        },
-        body: JSON.stringify({html_code: htmlCode, css_code: cssCode, js_code: jsCode})
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Update to use the returned unique_id to generate the shareable link
-        const shareUrl = window.location.href + 'share/' + data.unique_id; // Adjust if needed
-        document.getElementById('shareLink').innerHTML = `
-        <span>Shareable Code Link:</span>
-        <a href="${shareUrl}" target="_blank" class="shareable-link">${shareUrl}</a>
-        <button onclick="copyToClipboard('${shareUrl}')" class="copy-button"><i class="fas fa-clipboard"></i></button>
-    `;
-    alert('Share link generated successfully!');
-    })
-    .catch(error => console.error('Error:', error));
-}
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert('Link copied to clipboard!');
-    });
-}
-
 // Initialize resize event
 function initResize() {
     isResizing = true;
@@ -225,4 +195,3 @@ document.addEventListener('DOMContentLoaded', function() {
         isResizing = false;
     }, false);
 });
-

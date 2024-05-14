@@ -11,6 +11,8 @@
     --button-hover-color: #6872ef;
     --font-family: 'Poppins', sans-serif;
     --border-radius: 8px;
+    --shadow-strong: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-light: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 body {
@@ -26,11 +28,11 @@ body {
 
 #topbar {
     background: var(--topbar-bg-color);
-    padding: 5px 10px;
+    padding: 10px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: var(--shadow-light);
     flex-wrap: wrap;
     gap: 10px;
 }
@@ -55,6 +57,7 @@ body {
     transition: background-color 0.3s, transform 0.2s;
     border-radius: var(--border-radius);
     text-decoration: none;
+    box-shadow: var(--shadow-light);
 }
 
 #topbar a:hover, .tab:hover, .run-button:hover, #saveForm button:hover, .zoom-controls button:hover {
@@ -64,7 +67,7 @@ body {
 
 .tab.active {
     background-color: var(--tab-active-color);
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-strong);
 }
 
 #editorOutputContainer {
@@ -126,11 +129,21 @@ body {
         width: 100%;
         border: none;
         border-radius: 0;
+        height: 50vh; /* Increase the height of the editor area */
     }
 
     .resize {
         display: none;
     }
+}
+
+#actions {
+    display: flex;
+    width: 100%; /* Forces all child elements to align in a single row */
+}
+
+.run-button, #saveForm button {
+    flex: 1; /* Each button takes equal space */
 }
 
 #shareLink {
@@ -165,4 +178,42 @@ body {
 
 .copy-button:hover {
     background-color: var(--button-hover-color);
+}
+
+/* Popup Container */
+.popup-container {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+/* Popup Content */
+.popup-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+}
+
+/* Close Button */
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
