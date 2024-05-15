@@ -10,9 +10,9 @@
     --resize-handler-bg-color: #3e3e5e;
     --button-hover-color: #6872ef;
     --font-family: 'Poppins', sans-serif;
-    --border-radius: 8px;
-    --shadow-strong: 0 4px 8px rgba(0, 0, 0, 0.1);
-    --shadow-light: 0 2px 4px rgba(0,0,0,0.2);
+    --shadow-strong: 0 8px 16px rgba(0, 0, 0, 0.2);
+    --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --background-gradient: linear-gradient(to right, #1e1e2e, #2e2e48);
 }
 
 body {
@@ -21,9 +21,9 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: var(--editor-bg-color);
+    background: var(--background-gradient);
     color: var(--topbar-text-color);
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 #topbar {
@@ -33,18 +33,21 @@ body {
     align-items: center;
     justify-content: space-between;
     box-shadow: var(--shadow-light);
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 10px;
+    border-bottom: 3px solid var(--tab-active-color);
 }
 
 #topbar h2, #topbar h3 {
-    margin: 5px 2px;
+    margin: 0;
     color: var(--topbar-text-color);
+    font-size: 1.2rem;
 }
 
 #topbar .topbar-content, #topbar .navigation-links, #topbar .editor-tabs, #topbar .actions {
     display: flex;
     align-items: center;
+    flex-wrap: nowrap;
 }
 
 #topbar a, .tab, .run-button, #saveForm button, .zoom-controls button {
@@ -54,15 +57,17 @@ body {
     padding: 8px 12px;
     margin: 0;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-    border-radius: var(--border-radius);
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    border-radius: 8px;
     text-decoration: none;
     box-shadow: var(--shadow-light);
+    font-size: 0.85rem;
 }
 
 #topbar a:hover, .tab:hover, .run-button:hover, #saveForm button:hover, .zoom-controls button:hover {
     background-color: var(--button-hover-color);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-strong);
 }
 
 .tab.active {
@@ -74,35 +79,39 @@ body {
     flex-grow: 1;
     display: flex;
     overflow: hidden;
+    padding: 2px;
+    box-sizing: border-box;
 }
 
-.editor {
+.editor, #output {
     flex-grow: 1;
     background-color: #2e2e48;
     color: #c5c6c7;
-    padding: 10px;
     overflow: auto;
+    box-shadow: var(--shadow-light);
 }
 
 #output {
-    flex-grow: 1;
-    background-color: #fff;
+    background-color: #ffffff;
     border-left: 1px solid var(--output-border-color);
+    color: #333333;
 }
 
 .resize {
     background-color: var(--resize-handler-bg-color);
-    width: 5px;
+    width: 10px;
     cursor: ew-resize;
     align-self: stretch;
+    margin: 0 10px;
+    border-radius: 8px;
 }
 
 .zoom-controls button {
     background: none;
     color: var(--button-text-color);
-    padding: 5px;
+    padding: 8px;
     margin: 0 5px;
-    border-radius: var(--border-radius);
+    border-radius: 8px;
 }
 
 @media (max-width: 768px) {
@@ -117,8 +126,8 @@ body {
     }
 
     #topbar a, .tab, .run-button, #saveForm button {
-        margin: 2px 0;
-        padding: 8px 12px;
+        margin: 5px 0;
+        padding: 10px 15px;
     }
 
     #editorOutputContainer {
@@ -128,8 +137,7 @@ body {
     .editor, #output {
         width: 100%;
         border: none;
-        border-radius: 0;
-        height: 50vh; /* Increase the height of the editor area */
+        height: 50vh;
     }
 
     .resize {
@@ -139,11 +147,11 @@ body {
 
 #actions {
     display: flex;
-    width: 100%; /* Forces all child elements to align in a single row */
+    width: 100%;
 }
 
 .run-button, #saveForm button {
-    flex: 1; /* Each button takes equal space */
+    flex: 1;
 }
 
 #shareLink {
@@ -170,14 +178,18 @@ body {
     background-color: var(--button-bg-color);
     color: var(--button-text-color);
     border: none;
-    padding: 5px 10px;
+    padding: 8px 12px;
     cursor: pointer;
-    border-radius: var(--border-radius);
+    border-radius: 8px;
     font-size: 0.75rem;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: var(--shadow-light);
 }
 
 .copy-button:hover {
     background-color: var(--button-hover-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-strong);
 }
 
 /* Popup Container */
@@ -189,7 +201,7 @@ body {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 /* Popup Content */
@@ -197,10 +209,12 @@ body {
     position: relative;
     background-color: #fefefe;
     margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
+    padding: 30px;
+    border: 2px solid #888;
     width: 80%;
     max-width: 600px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-strong);
 }
 
 /* Close Button */
@@ -209,6 +223,7 @@ body {
     float: right;
     font-size: 28px;
     font-weight: bold;
+    transition: color 0.3s;
 }
 
 .close-button:hover,

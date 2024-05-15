@@ -58,7 +58,7 @@ function showEditor(lang) {
 function runCode() {
     var htmlCode = editors.html.getValue();
     var cssCode = "<style>" + editors.css.getValue() + "</style>";
-    var jsCode = "<script>" + editors.js.getValue() + "<\/script>";
+    var jsCode = "<script>try{" + editors.js.getValue() + "}catch(error){document.getElementById('errorDisplay').textContent = error.message;}<\/script>";
     var iframe = document.getElementById('output').contentWindow.document;
     iframe.open();
     iframe.write(htmlCode + cssCode + jsCode);
@@ -116,6 +116,35 @@ function shareOutput() {
         console.error('Error:', error);
         alert('Failed to generate share link.');
     });
+}
+
+function shareCode() {
+    var htmlCode = editors.html.getValue();
+    var cssCode = editors.css.getValue();
+    var jsCode = editors.js.getValue();
+
+    // Sending the code to the server to save and generate a shareable link
+    fetch('/save_snippet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            // Add CSRF token header if you're using CSRF protection
+        },
+        body: JSON.stringify({html_code: htmlCode, css_code: cssCode, js_code: jsCode})
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update to use the returned unique_id to generate the shareable link
+        const shareUrl = window.location.href + 'share/' + data.unique_id; // Adjust if needed
+        document.getElementById('shareLink').innerHTML = `
+            <span>Shareable Code Link:</span>
+            <a href="${shareUrl}" target="_blank" class="shareable-link">${shareUrl}</a>
+            <button onclick="copyToClipboard('${shareUrl}')" class="copy-button"><i class="fas fa-clipboard"></i></button>
+        `;
+        alert('Share link generated successfully!');
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 function copyToClipboard(text) {
