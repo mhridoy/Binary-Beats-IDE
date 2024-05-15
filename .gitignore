@@ -1,3 +1,4 @@
 .env
 .environ
 static/.DS_Store
+instance/db.sqlite
