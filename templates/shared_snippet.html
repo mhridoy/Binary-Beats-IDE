@@ -12,7 +12,11 @@
 <body>
     {{ snippet.htmlCode | safe }}
     <script>
-        {{ snippet.jsCode | safe }}
+        try {
+            {{ snippet.jsCode | safe }}
+        } catch (error) {
+            document.write('Error: ' + error.message);
+        }
     </script>
 </body>
 </html>

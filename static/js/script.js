@@ -3,7 +3,7 @@ var editors = {};
 var isResizing = false;
 var lastKnownMouseX = 0;
 var animationFrameRequested = false;
-
+var autoRunTimeout;
 
 function initMonaco() {
     require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
@@ -30,9 +30,16 @@ function initMonaco() {
         // Show HTML editor by default
         currentEditor = 'html';
         document.getElementById('htmlEditor').style.display = 'block';
+        
+        // Setup automatic run for each editor
+        Object.keys(editors).forEach(function (editorKey) {
+            editors[editorKey].onDidChangeModelContent(function () {
+                clearTimeout(autoRunTimeout);
+                autoRunTimeout = setTimeout(runCode, 500); // Run code 500 ms after the last edit
+            });
+        });
     });
 }
-
 
 function showEditor(lang) {
     Object.keys(editors).forEach(function(key) {
@@ -51,16 +58,14 @@ function showEditor(lang) {
 function runCode() {
     var htmlCode = editors.html.getValue();
     var cssCode = "<style>" + editors.css.getValue() + "</style>";
-    var jsCode = "<script>" + editors.js.getValue() + "<\/script>";
+    var jsCode = "<script>try{" + editors.js.getValue() + "}catch(error){document.getElementById('errorDisplay').textContent = error.message;}<\/script>";
     var iframe = document.getElementById('output').contentWindow.document;
     iframe.open();
     iframe.write(htmlCode + cssCode + jsCode);
     iframe.close();
 }
 
-
 function saveCode() {
-
     localStorage.setItem('htmlCode', editors.html.getValue());
     localStorage.setItem('cssCode', editors.css.getValue());
     localStorage.setItem('jsCode', editors.js.getValue());
@@ -113,27 +118,6 @@ function shareOutput() {
     });
 }
 
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert('Link copied to clipboard!');
-    });
-}
-
-let currentFontSize = 14; // Default font size for Monaco editor
-
-function changeZoom(direction) {
-    // Increment or decrement font size
-    currentFontSize += direction;
-    // Set minimum and maximum font size limits
-    currentFontSize = Math.max(10, Math.min(30, currentFontSize));
-
-    // Apply the font size change to all editors
-    editors.html.updateOptions({ 'fontSize': currentFontSize });
-    editors.css.updateOptions({ 'fontSize': currentFontSize });
-    editors.js.updateOptions({ 'fontSize': currentFontSize });
-}
-
-
 function shareCode() {
     var htmlCode = editors.html.getValue();
     var cssCode = editors.css.getValue();
@@ -154,18 +138,33 @@ function shareCode() {
         // Update to use the returned unique_id to generate the shareable link
         const shareUrl = window.location.href + 'share/' + data.unique_id; // Adjust if needed
         document.getElementById('shareLink').innerHTML = `
-        <span>Shareable Code Link:</span>
-        <a href="${shareUrl}" target="_blank" class="shareable-link">${shareUrl}</a>
-        <button onclick="copyToClipboard('${shareUrl}')" class="copy-button"><i class="fas fa-clipboard"></i></button>
-    `;
-    alert('Share link generated successfully!');
+            <span>Shareable Code Link:</span>
+            <a href="${shareUrl}" target="_blank" class="shareable-link">${shareUrl}</a>
+            <button onclick="copyToClipboard('${shareUrl}')" class="copy-button"><i class="fas fa-clipboard"></i></button>
+        `;
+        alert('Share link generated successfully!');
     })
     .catch(error => console.error('Error:', error));
 }
+
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
         alert('Link copied to clipboard!');
     });
+}
+
+let currentFontSize = 14; // Default font size for Monaco editor
+
+function changeZoom(direction) {
+    // Increment or decrement font size
+    currentFontSize += direction;
+    // Set minimum and maximum font size limits
+    currentFontSize = Math.max(10, Math.min(30, currentFontSize));
+
+    // Apply the font size change to all editors
+    editors.html.updateOptions({ 'fontSize': currentFontSize });
+    editors.css.updateOptions({ 'fontSize': currentFontSize });
+    editors.js.updateOptions({ 'fontSize': currentFontSize });
 }
 
 // Initialize resize event
@@ -225,4 +224,3 @@ document.addEventListener('DOMContentLoaded', function() {
         isResizing = false;
     }, false);
 });
-
