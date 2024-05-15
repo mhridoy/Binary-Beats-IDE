@@ -170,17 +170,20 @@ function autosaveCode() {
 
 function resetEditor(lang) {
     if (confirm('Are you sure you want to reset the ' + lang + ' editor? This action cannot be undone.')) {
-        switch(lang) {
-            case 'html':
-                editors.html.setValue('<!-- HTML goes here -->');
-                break;
-            case 'css':
-                editors.css.setValue('/* CSS goes here */');
-                break;
-            case 'js':
-                editors.js.setValue('// JavaScript goes here');
-                break;
-        }
+        // switch(lang) {
+        //     case 'html':
+        //         editors.html.setValue('<!-- HTML goes here -->');
+        //         break;
+        //     case 'css':
+        //         editors.css.setValue('/* CSS goes here */');
+        //         break;
+        //     case 'js':
+        //         editors.js.setValue('// JavaScript goes here');
+        //         break;
+        // }
+        editors.html.setValue('<!-- HTML goes here -->');
+        editors.css.setValue('/* CSS goes here */');
+        editors.js.setValue('// JavaScript goes here');
         saveCode();
     }
 }
