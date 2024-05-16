@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Binary Beats IDE - Your online environment for software development.">
@@ -17,70 +18,65 @@
         <div class="popup-content">
             <span class="close-button">&times;</span>
             <img src="https://i.ibb.co/8DnB4Sk/Whats-App-Image-2024-04-05-at-00-32-15.jpg" alt="Popup Image" style="width:100%;">
-        </div> -->
-    </div>
-<div id="topbar">
-    <div class="topbar-content">
-        <h2> <i class="fas fa-code"></i> Binary Beats </h2>
-        <h3> Welcome, <span id="username">{{ current_user.username }}</span></h3>
-    </div>
-    <div class="navigation-links">
-        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        <a href="/snippets"><i class="fas fa-clipboard-list"></i> View My Snippets</a>
-    </div>
-    <div class="editor-tabs">
-        <div class="tab active" onclick="showEditor('html')"><i class="fab fa-html5"></i> HTML</div>
-        <div class="tab" onclick="showEditor('css')"><i class="fab fa-css3-alt"></i> CSS</div>
-        <div class="tab" onclick="showEditor('js')"><i class="fab fa-js-square"></i> JavaScript</div>
-    </div>
-    <div class="actions">
-        <button class="run-button" onclick="runCode()"><i class="fas fa-play"></i> Run Code</button>
-        <form id="saveForm" style="display: inline;">
-            <button type="button" onclick="saveCode()"><i class="fas fa-save"></i> Save Code</button>
-            <button type="button" onclick="shareCode()"><i class="fas fa-share-alt"></i> Share Code</button>
-            <button type="button" onclick="shareOutput()"><i class="fas fa-external-link-alt"></i> Share Output</button>
-        </form>
-        <div class="zoom-controls">
-            <button onclick="changeZoom(1)"><i class="fas fa-search-plus"></i></button>
-           <button onclick="changeZoom(-1)"><i class="fas fa-search-minus"></i></button>
         </div>
+    </div> -->
+    <div id="topbar">
+        <div class="topbar-content">
+            <h2> <i class="fas fa-code"></i> Binary Beats </h2>
+            <h3> Welcome, <span id="username">{{ current_user.username }}</span></h3>
+        </div>
+        <div class="navigation-links">
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <a href="/snippets"><i class="fas fa-clipboard-list"></i> View My Save Codes</a>
+        </div>
+        <div class="editor-tabs">
+            <div class="tab active" onclick="showEditor('html')"><i class="fab fa-html5"></i> HTML</div>
+            <div class="tab" onclick="showEditor('css')"><i class="fab fa-css3-alt"></i> CSS</div>
+            <div class="tab" onclick="showEditor('js')"><i class="fab fa-js-square"></i> JavaScript</div>
+        </div>
+        <div class="actions">
+            <button class="run-button" onclick="runCode()"><i class="fas fa-play"></i> Run Code</button>
+            <form id="saveForm" style="display: inline;">
+                <!-- <button type="button" onclick="saveCode()"><i class="fas fa-save"></i> Save Code</button> -->
+                <button type="button" onclick="resetEditor()"><i class="fas fa-trash-restore"></i> Clear Code</button>
+                <button type="button" onclick="shareCode()"><i class="fas fa-share-alt"></i> Share Code</button>
+                <button type="button" onclick="shareOutput()"><i class="fas fa-external-link-alt"></i> Share Output</button>
+            </form>
+            <div class="zoom-controls">
+                <button onclick="changeZoom(1)"><i class="fas fa-search-plus"></i></button>
+                <button onclick="changeZoom(-1)"><i class="fas fa-search-minus"></i></button>
+            </div>
+        </div>
+        <p id="shareLink"></p>
     </div>
-    <p id="shareLink"></p>
-</div>
 
-<div id="editorOutputContainer">
-    <div id="htmlEditor" class="editor"></div>
-    <div id="cssEditor" class="editor" style="display: none;"></div>
-    <div id="jsEditor" class="editor" style="display: none;"></div>
-    <div class="resize" onmousedown="initResize(event)"></div>
-    <iframe id="output"></iframe>
+    <div id="editorOutputContainer">
+        <div id="htmlEditor" class="editor"></div>
+        <div id="cssEditor" class="editor" style="display: none;"></div>
+        <div id="jsEditor" class="editor" style="display: none;"></div>
+        <div class="resize" onmousedown="initResize(event)"></div>
+        <iframe id="output"></iframe>
+    </div>
 
+    <script src="static/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            openPopup();
 
-</div>
+            document.querySelector('.close-button').onclick = function() {
+                document.getElementById('popup').style.display = "none";
+            };
+        });
 
-
-
-
-<script src="static/js/script.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Directly open the popup without checking localStorage
-        openPopup();
-
-        document.querySelector('.close-button').onclick = function() {
-            document.getElementById('popup').style.display = "none";
-        };
-    });
-
-    function openPopup() {
-        document.getElementById('popup').style.display = "block";
-    }
-
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('popup')) {
-            document.getElementById('popup').style.display = "none";
+        function openPopup() {
+            document.getElementById('popup').style.display = "block";
         }
-    }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('popup')) {
+                document.getElementById('popup').style.display = "none";
+            }
+        }
     </script>
 </body>
 </html>
