@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My  Save Code</title>
+    <title>View Snippet</title>
     <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjNjY3RUVBIiBkPSJNMzk5LjY3IDI3Mi4ybC0xMTUuMTYgMTEuOTFMMjE1LjY3IDg4LjQ4IDE3OS4yIDI3Mi4yIDY0LjAxIDI4NC4xMiAxODAgMzgwLjExIDE1Ny4yIDQ5Ni42OWwxNTAtNTcuNTYgMTUwIDU3LjU2LTIyLjgxLTExNi41OEwzOTkuNjcgMjcyLjJ6Ii8+PC9zdmc+">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -98,7 +98,7 @@
             const cssCode = '<style>' + document.querySelector('pre:nth-of-type(2)').innerText + '</style>';
             const jsCode = '<script>' + document.querySelector('pre:nth-of-type(3)').innerText + '<\/script>';
             const combinedCode = htmlCode + cssCode + jsCode;
-    
+
             const iframe = document.createElement('iframe');
             iframe.style.width = '100%';
             iframe.style.height = '500px';
@@ -109,17 +109,17 @@
             iframe.contentWindow.document.write(combinedCode);
             iframe.contentWindow.document.close();
         }
-    
+
         function shareOutput() {
             const htmlCode = document.querySelector('pre:nth-of-type(1)').innerText;
             const cssCode = document.querySelector('pre:nth-of-type(2)').innerText;
             const jsCode = document.querySelector('pre:nth-of-type(3)').innerText;
-    
+
             const codeSnippets = { htmlCode, cssCode, jsCode };
-    
+
             // Assuming the server endpoint correctly handles the POST request and returns a shareLink
             const shareUrl = '/share_snippet';
-    
+
             fetch(shareUrl, {
                 method: 'POST',
                 headers: {
@@ -141,6 +141,6 @@
             });
         }
     </script>
-    
+
 </body>
 </html>

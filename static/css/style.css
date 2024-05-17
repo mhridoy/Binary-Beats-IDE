@@ -10,9 +10,9 @@
     --resize-handler-bg-color: #3e3e5e;
     --button-hover-color: #6872ef;
     --font-family: 'Poppins', sans-serif;
-    --shadow-strong: 0 8px 16px rgba(0, 0, 0, 0.2);
-    --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
-    --background-gradient: linear-gradient(to right, #1e1e2e, #2e2e48);
+    --border-radius: 8px;
+    --error-bg-color: #f8d7da;
+    --error-text-color: #721c24;
 }
 
 body {
@@ -21,97 +21,87 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background: var(--background-gradient);
+    background-color: var(--editor-bg-color);
     color: var(--topbar-text-color);
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 #topbar {
     background: var(--topbar-bg-color);
-    padding: 10px 20px;
+    padding: 5px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: var(--shadow-light);
-    flex-wrap: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    flex-wrap: wrap;
     gap: 10px;
-    border-bottom: 3px solid var(--tab-active-color);
 }
 
 #topbar h2, #topbar h3 {
-    margin: 0;
+    margin: 5px 2px;
     color: var(--topbar-text-color);
-    font-size: 1.2rem;
 }
 
 #topbar .topbar-content, #topbar .navigation-links, #topbar .editor-tabs, #topbar .actions {
     display: flex;
     align-items: center;
-    flex-wrap: nowrap;
 }
 
-#topbar a, .tab, .run-button, #saveForm button, .zoom-controls button {
+#topbar a, .tab, .run-button, #saveForm button, .zoom-controls button, .theme-button, .fullscreen-button, .format-button {
     background-color: var(--tab-bg-color);
     color: var(--button-text-color);
     border: none;
     padding: 8px 12px;
     margin: 0;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.2s;
+    border-radius: var(--border-radius);
     text-decoration: none;
-    box-shadow: var(--shadow-light);
-    font-size: 0.85rem;
 }
 
-#topbar a:hover, .tab:hover, .run-button:hover, #saveForm button:hover, .zoom-controls button:hover {
+#topbar a:hover, .tab:hover, .run-button:hover, #saveForm button:hover, .zoom-controls button:hover, .theme-button:hover, .fullscreen-button:hover, .format-button:hover {
     background-color: var(--button-hover-color);
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-strong);
+    transform: translateY(-2px);
 }
 
 .tab.active {
     background-color: var(--tab-active-color);
-    box-shadow: var(--shadow-strong);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 #editorOutputContainer {
     flex-grow: 1;
     display: flex;
     overflow: hidden;
-    padding: 2px;
-    box-sizing: border-box;
 }
 
-.editor, #output {
+.editor {
     flex-grow: 1;
     background-color: #2e2e48;
     color: #c5c6c7;
+    padding: 10px;
     overflow: auto;
-    box-shadow: var(--shadow-light);
 }
 
 #output {
-    background-color: #ffffff;
+    flex-grow: 1;
+    background-color: #fff;
     border-left: 1px solid var(--output-border-color);
-    color: #333333;
 }
 
 .resize {
     background-color: var(--resize-handler-bg-color);
-    width: 10px;
+    width: 5px;
     cursor: ew-resize;
     align-self: stretch;
-    margin: 0 10px;
-    border-radius: 8px;
 }
 
 .zoom-controls button {
     background: none;
     color: var(--button-text-color);
-    padding: 8px;
+    padding: 5px;
     margin: 0 5px;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
 }
 
 @media (max-width: 768px) {
@@ -126,8 +116,8 @@ body {
     }
 
     #topbar a, .tab, .run-button, #saveForm button {
-        margin: 5px 0;
-        padding: 10px 15px;
+        margin: 2px 0;
+        padding: 8px 12px;
     }
 
     #editorOutputContainer {
@@ -137,21 +127,12 @@ body {
     .editor, #output {
         width: 100%;
         border: none;
-        height: 50vh;
+        border-radius: 0;
     }
 
     .resize {
         display: none;
     }
-}
-
-#actions {
-    display: flex;
-    width: 100%;
-}
-
-.run-button, #saveForm button {
-    flex: 1;
 }
 
 #shareLink {
@@ -178,21 +159,16 @@ body {
     background-color: var(--button-bg-color);
     color: var(--button-text-color);
     border: none;
-    padding: 8px 12px;
+    padding: 5px 10px;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     font-size: 0.75rem;
-    transition: background-color 0.3s, transform 0.2s;
-    box-shadow: var(--shadow-light);
 }
 
 .copy-button:hover {
     background-color: var(--button-hover-color);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-strong);
 }
 
-/* Popup Container */
 .popup-container {
     position: fixed;
     z-index: 1;
@@ -201,29 +177,24 @@ body {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0,0,0,0.4);
 }
 
-/* Popup Content */
 .popup-content {
     position: relative;
     background-color: #fefefe;
     margin: 15% auto;
-    padding: 30px;
-    border: 2px solid #888;
+    padding: 20px;
+    border: 1px solid #888;
     width: 80%;
     max-width: 600px;
-    border-radius: 8px;
-    box-shadow: var(--shadow-strong);
 }
 
-/* Close Button */
 .close-button {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
-    transition: color 0.3s;
 }
 
 .close-button:hover,
@@ -231,4 +202,82 @@ body {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+.image-container {
+    text-align: center;
+    background: #fff;
+    padding: 1px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+    border-radius: 1px;
+    margin-top: 1px;
+}
+
+#imageList {
+    margin-top: 2px;
+}
+
+.image-item {
+    margin-bottom: 1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.image-item img {
+    max-width: 50px;
+    max-height: 50px;
+    display: block;
+    margin: 0 auto;
+}
+
+.image-item .short-name,
+.image-item .image-link {
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.image-item .copy-icon {
+    cursor: pointer;
+    margin-left: 1px;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.error-display {
+    background-color: var(--error-bg-color);
+    color: var(--error-text-color);
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: var(--border-radius);
+    display: none;
+}
+.theme-button,
+.fullscreen-button,
+.format-button {
+    background-color: var(--tab-bg-color);
+    color: var(--button-text-color);
+    border: none;
+    padding: 8px 12px;
+    margin: 0 5px;  /* Adjust margin to ensure proper spacing */
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.theme-button:hover,
+.fullscreen-button:hover,
+.format-button:hover {
+    background-color: var(--button-hover-color);
+    transform: translateY(-2px);
+}
+.theme-button i,
+.fullscreen-button i,
+.format-button i {
+    margin-right: 8px; /* Adds space between the icon and text */
 }

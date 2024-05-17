@@ -6,53 +6,10 @@ import uuid
 from datetime import datetime
 from flask_migrate import Migrate
 import string, requests, secrets
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
-from authlib.integrations.flask_client import OAuth
-import os
-
-      
-from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file
 app = Flask(__name__)
-oauth = OAuth(app)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['GOOGLE_CLIENT_ID'] = "google-client-id"
-app.config['GOOGLE_CLIENT_SECRET'] = "google-client-secret-key"
-app.config['GITHUB_CLIENT_ID'] = "github-client-id"
-app.config['GITHUB_CLIENT_SECRET'] = "github-client-secret-key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-
-
-      
-google = oauth.register(
-    name='google',
-    client_id=app.config['GOOGLE_CLIENT_ID'],
-    client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    access_token_params=None,
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-    authorize_params=None,
-    api_base_url='https://www.googleapis.com/oauth2/v1/',
-    userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
-    client_kwargs={'scope': 'openid email profile'},
-    jwks_uri = "https://www.googleapis.com/oauth2/v3/certs"
-)
-
-
-github = oauth.register (
-  name = 'github',
-    client_id = app.config["GITHUB_CLIENT_ID"],
-    client_secret = app.config["GITHUB_CLIENT_SECRET"],
-    access_token_url = 'https://github.com/login/oauth/access_token',
-    access_token_params = None,
-    authorize_url = 'https://github.com/login/oauth/authorize',
-    authorize_params = None,
-    api_base_url = 'https://api.github.com/',
-    client_kwargs = {'scope': 'user:email'},
-)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -75,7 +32,6 @@ class Snippet(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', backref=db.backref('snippets', lazy=True))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -115,69 +71,6 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html')
 
-
-
-
-# Google login route
-@app.route('/login/google')
-def google_login():
-    google = oauth.create_client('google')
-    redirect_url = url_for('google_authorize', _external=True)
-    return google.authorize_redirect(redirect_url)
-
-
-# Google authorize route
-@app.route('/login/google/authorize')
-def google_authorize():
-    google = oauth.create_client('google')  # Reuse the OAuth client
-    token = google.authorize_access_token()  # Retrieve the access token
-    resp = google.get('userinfo').json()  # Use the token to fetch the user info
-    # print(resp.keys())
-    # Assuming 'sub' is the unique identifier for the user in Google's response
-    user = User.query.filter_by(username=resp['email']).first()
-    
-    if not user:
-        # If the user doesn't exist, create a new one
-        user = User(
-            username=resp['email']
-            # Other fields...
-        )
-        db.session.add(user)
-        db.session.commit()
-    print('Check: ' ,user.username, '\n')   
-    login_user(user)
-    
-    return redirect(url_for('index'))
-
-# Github login route
-@app.route('/login/github')
-def github_login():
-    github = oauth.create_client('github')
-    redirect_uri = url_for('github_authorize', _external=True)
-    return github.authorize_redirect(redirect_uri)
-
-
-# Github authorize route
-@app.route('/login/github/authorize')
-def github_authorize():
-    github = oauth.create_client('github')
-    token = github.authorize_access_token()
-    resp = github.get('user').json()
-    
-    user = User.query.filter_by(username=resp['login']).first()
-    
-    if not user:
-        # If the user doesn't exist, create a new one
-        user = User(
-            username=resp['login']
-            # Other fields...
-        )
-        db.session.add(user)
-        db.session.commit()
-    login_user(user)
-    # return "You are successfully signed in using github"
-    return redirect(url_for('index'))
-    
 @app.route('/logout')
 @login_required
 def logout():
@@ -253,7 +146,5 @@ def shared_snippet(link_id):
 
 # ... remaining code ...
 
-
 if __name__ == '__main__':
     app.run(debug=True)
-    
