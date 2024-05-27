@@ -272,6 +272,8 @@ def share_snippet():
     full_link = url_for('shared_snippet', link_id=unique_id, _external=True)  # Generates a full URL
     return jsonify({'shareLink': full_link})
 
+  
+  
 @app.route('/shared/<link_id>')
 def shared_snippet(link_id):
     """Render the shared code snippet"""

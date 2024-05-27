@@ -5,6 +5,7 @@ var lastKnownMouseX = 0;
 var animationFrameRequested = false;
 var autoRunTimeout;
 var autosaveInterval;
+var currentFontSize = 14; // Default font size for Monaco editor
 
 function initMonaco() {
     require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
@@ -16,6 +17,8 @@ function initMonaco() {
             automaticLayout: true,
             suggestOnTriggerCharacters: true, // Enable auto code suggestions
             wordBasedSuggestions: true,
+            formatOnType: true, // Format code on type
+            formatOnPaste: true // Format code on paste
         });
         editors.css = monaco.editor.create(document.getElementById('cssEditor'), {
             value: localStorage.getItem('cssCode') || '/* CSS goes here */',
@@ -24,6 +27,8 @@ function initMonaco() {
             automaticLayout: true,
             suggestOnTriggerCharacters: true, // Enable auto code suggestions
             wordBasedSuggestions: true,
+            formatOnType: true, // Format code on type
+            formatOnPaste: true // Format code on paste
         });
         editors.js = monaco.editor.create(document.getElementById('jsEditor'), {
             value: localStorage.getItem('jsCode') || '// JavaScript goes here',
@@ -32,12 +37,14 @@ function initMonaco() {
             automaticLayout: true,
             suggestOnTriggerCharacters: true, // Enable auto code suggestions
             wordBasedSuggestions: true,
+            formatOnType: true, // Format code on type
+            formatOnPaste: true // Format code on paste
         });
 
         // Show HTML editor by default
         currentEditor = 'html';
         document.getElementById('htmlEditor').style.display = 'block';
-        
+
         // Setup automatic run for each editor
         Object.keys(editors).forEach(function (editorKey) {
             editors[editorKey].onDidChangeModelContent(function () {
@@ -168,27 +175,14 @@ function autosaveCode() {
     console.log('Autosaved at ' + new Date().toLocaleTimeString());
 }
 
-function resetEditor(lang) {
-    if (confirm('Are you sure you want to reset the ' + lang + ' editor? This action cannot be undone.')) {
-        // switch(lang) {
-        //     case 'html':
-        //         editors.html.setValue('<!-- HTML goes here -->');
-        //         break;
-        //     case 'css':
-        //         editors.css.setValue('/* CSS goes here */');
-        //         break;
-        //     case 'js':
-        //         editors.js.setValue('// JavaScript goes here');
-        //         break;
-        // }
+function resetEditor() {
+    if (confirm('Are you sure you want to reset the editor? This action cannot be undone.')) {
         editors.html.setValue('<!-- HTML goes here -->');
         editors.css.setValue('/* CSS goes here */');
         editors.js.setValue('// JavaScript goes here');
         saveCode();
     }
 }
-
-let currentFontSize = 14; // Default font size for Monaco editor
 
 function changeZoom(direction) {
     // Increment or decrement font size
@@ -260,18 +254,87 @@ document.addEventListener('DOMContentLoaded', function() {
     }, false);
 });
 
-// Keyboard shortcuts for zoom in and zoom out
-window.addEventListener('keydown', function(e) {
-    if (e.ctrlKey) {
-        switch (e.key) {
-            case '0':
-                changeZoom(1);
-                e.preventDefault();
-                break;
-            case '9':
-                changeZoom(-1);
-                e.preventDefault();
-                break;
-        }
+// Theme switching functionality
+function switchTheme() {
+    const currentTheme = editors.html._themeService._theme.themeName;
+    const newTheme = currentTheme === 'vs-dark' ? 'vs-light' : (currentTheme === 'vs-light' ? 'hc-black' : 'vs-dark');
+    Object.keys(editors).forEach(key => {
+        monaco.editor.setTheme(newTheme);
+    });
+}
+
+function uploadFile() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const fileContent = event.target.result;
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            let editor;
+            switch (fileExtension) {
+                case 'html':
+                    editor = editors.html;
+                    break;
+                case 'css':
+                    editor = editors.css;
+                    break;
+                case 'js':
+                    editor = editors.js;
+                    break;
+                default:
+                    alert('Unsupported file type');
+                    return;
+            }
+            editor.setValue(fileContent);
+        };
+        reader.readAsText(file);
     }
-}, false);
+}
+
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+    }
+}
+}
+
+function formatCode() {
+    const editor = editors[currentEditor];
+    editor.getAction('editor.action.formatDocument').run();
+}
+
+function downloadCode() {
+    const htmlCode = editors.html.getValue();
+    const cssCode = editors.css.getValue();
+    const jsCode = editors.js.getValue();
+
+    const blob = new Blob([htmlCode + '\n' + cssCode + '\n' + jsCode], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'code.txt';
+    link.click();
+}
+
+// Adding keyboard shortcuts
+document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey && event.key === 's') {
+        event.preventDefault();
+        saveCode();
+    }
+    if (event.ctrlKey && event.key === 'r') {
+        event.preventDefault();
+        runCode();
+    }
+    if (event.ctrlKey && event.key === 'b') {
+        event.preventDefault();
+        formatCode();
+    }
+    if (event.ctrlKey && event.key === 'e') {
+        event.preventDefault();
+        toggleFullScreen();
+    }
+});

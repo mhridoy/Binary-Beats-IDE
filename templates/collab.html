@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Binary Beats IDE - Collaborative Programming">
+    <meta name="author" content="Binary Beats">
+    <title>Binary Beats IDE - Collaborative Programming</title>
+    <link rel="icon" type="image/x-icon" href="/static/icons/icon-192x192.png">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+    <div id="topbar">
+        <div class="topbar-content">
+            <h2><i class="fas fa-code"></i> Binary Beats - Collab</h2>
+            <h3>Welcome, <span id="username">{{ user.username }}</span></h3>
+        </div>
+        <div class="navigation-links">
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <a href="/snippets"><i class="fas fa-clipboard-list"></i> View My Save Codes</a>
+        </div>
+        <div class="editor-tabs">
+            <div class="tab active" onclick="showEditor('html')"><i class="fab fa-html5"></i> HTML</div>
+            <div class="tab" onclick="showEditor('css')"><i class="fab fa-css3-alt"></i> CSS</div>
+            <div class="tab" onclick="showEditor('js')"><i class="fab fa-js-square"></i> JavaScript</div>
+        </div>
+        <div class="actions">
+            <button class="run-button" onclick="runCode()"><i class="fas fa-play"></i> Run Code</button>
+            <form id="saveForm" style="display: inline;">
+                <button type="button" onclick="resetEditor()"><i class="fas fa-trash-restore"></i> Clear Code</button>
+                <button type="button" onclick="shareCode()"><i class="fas fa-share-alt"></i> Share Code</button>
+                <button type="button" onclick="shareOutput()"><i class="fas fa-external-link-alt"></i> Share Output</button>
+            </form>
+            <div class="zoom-controls">
+                <button onclick="changeZoom(1)"><i class="fas fa-search-plus"></i></button>
+                <button onclick="changeZoom(-1)"><i class="fas fa-search-minus"></i></button>
+            </div>
+        </div>
+        <p id="shareLink"></p>
+    </div>
+
+    <div id="editorOutputContainer">
+        <div id="htmlEditor" class="editor"></div>
+        <div id="cssEditor" class="editor" style="display: none;"></div>
+        <div id="jsEditor" class="editor" style="display: none;"></div>
+        <div class="resize" onmousedown="initResize(event)"></div>
+        <iframe id="output"></iframe>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+    <script>
+        var editors = {};
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
+        require(['vs/editor/editor.main'], function () {
+            editors.html = monaco.editor.create(document.getElementById('htmlEditor'), {
+                value: '<!-- HTML goes here -->',
+                language: 'html',
+                theme: 'vs-dark',
+                automaticLayout: true,
+            });
+            editors.css = monaco.editor.create(document.getElementById('cssEditor'), {
+                value: '/* CSS goes here */',
+                language: 'css',
+                theme: 'vs-dark',
+                automaticLayout: true,
+            });
+            editors.js = monaco.editor.create(document.getElementById('jsEditor'), {
+                value: '// JavaScript goes here',
+                language: 'javascript',
+                theme: 'vs-dark',
+                automaticLayout: true,
+            });
+
+            // Show HTML editor by default
+            document.getElementById('htmlEditor').style.display = 'block';
+
+            // Socket.io for real-time collaboration
+            const socket = io.connect(window.location.origin);
+            const room = "{{ room }}";
+            const username = document.getElementById('username').innerText;
+
+            socket.emit('join', { username, room });
+
+            socket.on('initial_code', (data) => {
+                editors.html.setValue(data.html_code);
+                editors.css.setValue(data.css_code);
+                editors.js.setValue(data.js_code);
+            });
+
+            socket.on('update_code', (data) => {
+                if (data.lang === 'html') {
+                    editors.html.setValue(data.code);
+                } else if (data.lang === 'css') {
+                    editors.css.setValue(data.code);
+                } else if (data.lang === 'js') {
+                    editors.js.setValue(data.code);
+                }
+            });
+
+            Object.keys(editors).forEach((lang) => {
+                editors[lang].onDidChangeModelContent(() => {
+                    const code = editors[lang].getValue();
+                    socket.emit('code_change', { lang, code, room });
+                });
+            });
+        });
+
+        function showEditor(lang) {
+            Object.keys(editors).forEach(function(key) {
+                document.getElementById(key + 'Editor').style.display = 'none';
+            });
+            document.getElementById(lang + 'Editor').style.display = 'block';
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase() === lang) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        function runCode() {
+            var htmlCode = editors.html.getValue();
+            var cssCode = "<style>" + editors.css.getValue() + "</style>";
+            var jsCode = "<script>try{" + editors.js.getValue() + "}catch(error){document.getElementById('errorDisplay').textContent = error.message;}<\/script>";
+            var iframe = document.getElementById('output').contentWindow.document;
+            iframe.open();
+            iframe.write(htmlCode + cssCode + jsCode);
+            iframe.close();
+        }
+
+        function resetEditor() {
+            if (confirm('Are you sure you want to reset the editor? This action cannot be undone.')) {
+                editors.html.setValue('<!-- HTML goes here -->');
+                editors.css.setValue('/* CSS goes here */');
+                editors.js.setValue('// JavaScript goes here');
+                saveCode();
+            }
+        }
+
+        function saveCode() {
+            localStorage.setItem('htmlCode', editors.html.getValue());
+            localStorage.setItem('cssCode', editors.css.getValue());
+            localStorage.setItem('jsCode', editors.js.getValue());
+
+            document.getElementById('html_code').value = editors.html.getValue();
+            document.getElementById('css_code').value = editors.css.getValue();
+            document.getElementById('js_code').value = editors.js.getValue();
+            document.getElementById('saveForm').submit();
+        }
+
+        function shareCode() {
+            var htmlCode = editors.html.getValue();
+            var cssCode = editors.css.getValue();
+            var jsCode = editors.js.getValue();
+
+            fetch('/save_snippet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({html_code: htmlCode, css_code: cssCode, js_code: jsCode})
+            })
+            .then(response => response.json())
+            .then(data => {
+                const shareUrl = window.location.href + 'share/' + data.unique_id;
+                document.getElementById('shareLink').innerHTML = `
+                    <span>Shareable Code Link:</span>
+                    <a href="${shareUrl}" target="_blank" class="shareable-link">${shareUrl}</a>
+                    <button onclick="copyToClipboard('${shareUrl}')" class="copy-button"><i class="fas fa-clipboard"></i></button>
+                `;
+                alert('Share link generated successfully!');
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function shareOutput() {
+            var htmlCode = editors.html.getValue();
+            var cssCode = editors.css.getValue();
+            var jsCode = editors.js.getValue();
+
+            fetch('/save_snippet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({html_code: htmlCode, css_code: cssCode, js_code: jsCode})
+            })
+            .then(response => response.json())
+            .then(data => {
+                const outputShareUrl = `${window.location.origin}/share/output/${data.unique_id}`;
+                document.getElementById('shareLink').innerHTML = `Output Link: <a href="${outputShareUrl}" target="_blank">${outputShareUrl}</a>`;
+                alert('Share link generated successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to generate share link.');
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Link copied to clipboard!');
+            });
+        }
+
+        function changeZoom(direction) {
+            let currentFontSize = 14; // Default font size for Monaco editor
+            currentFontSize += direction;
+            currentFontSize = Math.max(10, Math.min(30, currentFontSize));
+
+            editors.html.updateOptions({ 'fontSize': currentFontSize });
+            editors.css.updateOptions({ 'fontSize': currentFontSize });
+            editors.js.updateOptions({ 'fontSize': currentFontSize });
+        }
+
+        function initResize(event) {
+            isResizing = true;
+        }
+
+        function resize() {
+            if (!isResizing) return;
+
+            if (!animationFrameRequested) {
+                animationFrameRequested = true;
+                requestAnimationFrame(function () {
+                    var container = document.getElementById('editorOutputContainer');
+                    var containerRect = container.getBoundingClientRect();
+                    var newWidth = lastKnownMouseX - containerRect.left;
+
+                    if (newWidth < 100) newWidth = 100;
+                    if (newWidth > containerRect.width - 100) newWidth = containerRect.width - 100;
+
+                    var editorContainer = document.querySelector('.editor:not([style*="display: none"])');
+                    var outputContainer = document.getElementById('output');
+
+                    editorContainer.style.width = newWidth + 'px';
+                    outputContainer.style.width = (containerRect.width - newWidth) + 'px';
+
+                    Object.keys(editors).forEach(function (key) {
+                        editors[key].layout();
+                    });
+
+                    animationFrameRequested = false;
+                });
+            }
+        }
+
+        window.addEventListener('mousemove', function (e) {
+            lastKnownMouseX = e.clientX;
+            if (isResizing) {
+                resize();
+            }
+        }, false);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var resizeBar = document.querySelector('.resize');
+            resizeBar.addEventListener('mousedown', function(e) {
+                isResizing = true;
+                e.preventDefault();
+            }, false);
+
+            window.addEventListener('mouseup', function() {
+                isResizing = false;
+            }, false);
+        });
+
+        window.addEventListener('keydown', function(e) {
+            if (e.ctrlKey) {
+                switch (e.key) {
+                    case '0':
+                        changeZoom(1);
+                        e.preventDefault();
+                        break;
+                    case '9':
+                        changeZoom(-1);
+                        e.preventDefault();
+                        break;
+                }
+            }
+        }, false);
+    </script>
+</body>
+</html>
