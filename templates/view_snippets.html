@@ -1,17 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+<html lang="en"
+    class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
 
-<head>
-    <meta charset="UTF-8">
-    <title>My Save Code | Binary Beats IDE</title>
-    <link rel="icon"
-        href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjMzhCREY4IiBkPSJNMzk5LjY3IDI3Mi4ybC0xMTUuMTYgMTEuOTFMMjE1LjY3IDg4LjQ4IDE3OS4yIDI3Mi4yIDY0LjAxIDI4NC4xMiAxODAgMzgwLjExIDE1Ny4yIDQ5Ni42OWwxNTAtNTcuNTYgMTUwIDU3LjU2LTIyLjgxLTExNi41OEwzOTkuNjcgMjcyLjJ6Ii8+PC9zdmc+">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Rubik:wght@400;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <title>My Save Code | Binary Beats IDE</title>
+        <link rel="icon"
+            href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjMzhCREY4IiBkPSJNMzk5LjY3IDI3Mi4ybC0xMTUuMTYgMTEuOTFMMjE1LjY3IDg4LjQ4IDE3OS4yIDI3Mi4yIDY0LjAxIDI4NC4xMiAxODAgMzgwLjExIDE1Ny4yIDQ5Ni42OWwxNTAtNTcuNTYgMTUwIDU3LjU2LTIyLjgxLTExNi41OEwzOTkuNjcgMjcyLjJ6Ii8+PC9zdmc+">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Rubik:wght@400;700&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+            integrity="sha384-PkZKUKmX3SVL8Pbe2Dbh8cRGJC6gcP9Z3fUY97A25t1FANfnmFZJfRHzjsd9BYrA"
+            crossorigin="anonymous">
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+            defer></script>
+        <style>
         .snippet-container {
             animation: fadeInAnimation 1.5s ease-out forwards;
         }
@@ -37,44 +46,72 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
     </style>
-</head>
+    </head>
 
-<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-gray-100 py-8 px-4 font-rubik">
-    <div class="max-w-5xl mx-auto">
-        <div class="flex justify-between items-center mb-12">
-            <h1 class="text-4xl font-bold text-teal-400 relative"> My Snippets <span
-                    class="absolute -bottom-4 left-0 w-full h-1 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-full"></span>
-            </h1> <a href="/"
-                class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition">
-                Back to Editor </a>
-        </div>
-        <div class="snippet-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Loop through snippets --> {% for snippet in snippets %} <div
-                class="snippet bg-gradient-to-br from-indigo-800 to-purple-900 rounded-lg p-6 border border-indigo-700 shadow-lg relative overflow-hidden">
+    <body
+        class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-gray-100 py-8 px-4 font-rubik">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex justify-between items-center mb-12">
+                <h1 class="text-4xl font-bold text-teal-400 relative"> My
+                    Snippets <span
+                        class="absolute -bottom-4 left-0 w-full h-1 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-full"></span>
+                </h1> <a href="/"
+                    class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition">
+                    Back to Editor </a>
+            </div>
+            <div
+                class="snippet-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Loop through snippets --> {% for snippet in snippets %}
                 <div
-                    class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-t-lg">
-                </div> <a href="{{ url_for('view_snippet', unique_id=snippet.unique_id) }}"
-                    class="text-teal-400 font-bold text-2xl hover:text-teal-300 transition">Snippet #{{ loop.index
-                    }}</a>
-                <div class="text-gray-300 text-sm mt-2">Created: {{ snippet.created_at.strftime('%Y-%m-%d %H:%M:%S') if
-                    snippet.created_at else 'Unknown' }}</div>
-                <div
-                    class="snippet-preview mt-4 bg-gradient-to-br from-indigo-700 to-purple-800 rounded-md overflow-hidden relative">
+                    class="snippet bg-gradient-to-br from-indigo-800 to-purple-900 rounded-lg p-6 border border-indigo-700 shadow-lg relative overflow-hidden">
                     <div
-                        class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-t-md">
-                    </div> <iframe srcdoc="{{ snippet.html_code }}" class="w-full h-40 border-none"></iframe>
-                </div>
-            </div> {% else %} <p class="text-gray-300">No snippets found.</p> {% endfor %} </div>
-    </div>
-    <div class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 py-4 shadow-lg">
-        <div class="max-w-5xl mx-auto flex justify-center items-center">
-            <div class="flex space-x-8"> <a href="#" class="text-white hover:text-gray-200 transition"> <i
-                        class="fas fa-code fa-3x"></i> </a> <a href="#"
-                    class="text-white hover:text-gray-200 transition"> <i class="fas fa-pen-nib fa-3x"></i> </a> <a
-                    href="#" class="text-white hover:text-gray-200 transition"> <i class="fas fa-palette fa-3x"></i>
-                </a> </div>
+                        class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-t-lg">
+                    </div> <a
+                        href="{{ url_for('view_snippet', unique_id=snippet.unique_id) }}"
+                        class="text-teal-400 font-bold text-2xl hover:text-teal-300 transition">Snippet
+                        #{{ loop.index
+                        }}</a>
+                    <form
+                        action="{{ url_for('delete_snippet', snippet_id=snippet.id) }}"
+                        method="post" class="inline-block">
+                        <button type="submit"
+                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400 transition flex items-center" onclick="return confirm('Are you sure?')">
+                            <svg class="h-4 w-4 mr-2"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M8 1a1 1 0 0 1 1 1v1h2V2a1 1 0 0 1 2 0v1h2V2a1 1 0 0 1 2 0v1h1a1 1 0 0 1 1 1v1H2V4a1 1 0 0 1 1-1h1V2a1 1 0 0 1 1-1zm3 3H9v1h2V4zM7 8h6v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V8zm3 2a1 1 0 0 0-1 1v5a1 1 0 0 0 2 0V11a1 1 0 0 0-1-1zm-4 0a1 1 0 0 0-1 1v5a1 1 0 0 0 2 0V11a1 1 0 0 0-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Delete
+                        </button>
+                    </form>
+                    <div class="text-gray-300 text-sm mt-2">Created: {{
+                        snippet.created_at.strftime('%Y-%m-%d %H:%M:%S') if
+                        snippet.created_at else 'Unknown' }}</div>
+                    <div
+                        class="snippet-preview mt-4 bg-gradient-to-br from-indigo-700 to-purple-800 rounded-md overflow-hidden relative">
+                        <div
+                            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-t-md">
+                        </div> <iframe srcdoc="{{ snippet.html_code }}"
+                            class="w-full h-40 border-none"></iframe>
+                    </div>
+                </div> {% else %} <p class="text-gray-300">No snippets
+                    found.</p> {% endfor %} </div>
         </div>
-    </div>
-</body>
-
+        <div
+            class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 py-4 shadow-lg">
+            <div class="max-w-5xl mx-auto flex justify-center items-center">
+                <div class="flex space-x-8"> <a href="#"
+                        class="text-white hover:text-gray-200 transition"> <i
+                            class="fas fa-code fa-3x"></i> </a> <a href="#"
+                        class="text-white hover:text-gray-200 transition"> <i
+                            class="fas fa-pen-nib fa-3x"></i> </a> <a
+                        href="#"
+                        class="text-white hover:text-gray-200 transition"> <i
+                            class="fas fa-palette fa-3x"></i>
+                    </a> </div>
+            </div>
+        </div>
+    </body>
 </html>
