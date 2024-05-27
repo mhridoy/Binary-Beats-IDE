@@ -6,10 +6,55 @@ import uuid
 from datetime import datetime
 from flask_migrate import Migrate
 import string, requests, secrets
+import google.oauth2.credentials
+import google_auth_oauthlib.flow
+from authlib.integrations.flask_client import OAuth
+import os
+
+      
+      
+      
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 app = Flask(__name__)
+oauth = OAuth(app)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['GOOGLE_CLIENT_ID'] = "google-client-id"
+app.config['GOOGLE_CLIENT_SECRET'] = "google-client-secret-key"
+app.config['GITHUB_CLIENT_ID'] = "github-client-id"
+app.config['GITHUB_CLIENT_SECRET'] = "github-client-secret-key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+
+      
+google = oauth.register(
+    name='google',
+    client_id=app.config['GOOGLE_CLIENT_ID'],
+    client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    authorize_params=None,
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
+    client_kwargs={'scope': 'openid email profile'},
+    jwks_uri = "https://www.googleapis.com/oauth2/v3/certs"
+)
+
+
+github = oauth.register (
+  name = 'github',
+    client_id = app.config["GITHUB_CLIENT_ID"],
+    client_secret = app.config["GITHUB_CLIENT_SECRET"],
+    access_token_url = 'https://github.com/login/oauth/access_token',
+    access_token_params = None,
+    authorize_url = 'https://github.com/login/oauth/authorize',
+    authorize_params = None,
+    api_base_url = 'https://api.github.com/',
+    client_kwargs = {'scope': 'user:email'},
+)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -33,6 +78,7 @@ class Snippet(db.Model):
     user = db.relationship('User', backref=db.backref('snippets', lazy=True))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -42,8 +88,19 @@ def load_user(user_id):
 def index():
     return render_template('index.html', user=current_user)
 
+@app.route('/ideengine', methods=['GET'])
+def home():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    return render_template('home.html')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -52,10 +109,14 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         flash('Invalid username or password')
+        
     return render_template('login.html')
-
+    
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -69,13 +130,74 @@ def signup():
         db.session.commit()
         flash('Account created successfully, please login.')
         return redirect(url_for('login'))
+    
+    
     return render_template('signup.html')
+    
+
+
+# Google login route
+@app.route('/login/google')
+def google_login():
+    google = oauth.create_client('google')
+    redirect_url = url_for('google_authorize', _external=True)
+    return google.authorize_redirect(redirect_url)
+
+# Google authorize route
+@app.route('/login/google/callback')
+def google_authorize():
+    google = oauth.create_client('google')  # Reuse the OAuth client
+    token = google.authorize_access_token()  # Retrieve the access token
+    resp = google.get('userinfo').json()  # Use the token to fetch the user info
+    # print(resp.keys())
+    # Assuming 'sub' is the unique identifier for the user in Google's response
+    user = User.query.filter_by(username=resp['email']).first()
+    
+    if not user:
+        # If the user doesn't exist, create a new one
+        user = User(
+            username=resp['email']
+            # Other fields...
+        )
+        db.session.add(user)
+        db.session.commit()
+    print('Check: ' ,user.username, '\n')   
+    login_user(user)
+    
+    return redirect(url_for('index'))
+
+# Github login route
+@app.route('/login/github')
+def github_login():
+    github = oauth.create_client('github')
+    redirect_uri = url_for('github_authorize', _external=True)
+    return github.authorize_redirect(redirect_uri)
+
+# Github authorize route
+@app.route('/login/github/callback')
+def github_authorize():
+    github = oauth.create_client('github')
+    token = github.authorize_access_token()
+    resp = github.get('user').json()
+    user = User.query.filter_by(username=resp['login']).first()
+    
+    if not user:
+        # If the user doesn't exist, create a new one
+        user = User(
+            username=resp['login']
+            # Other fields...
+        )
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
+    # return "You are successfully signed in using github"
+    return redirect(url_for('index'))
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 @app.route('/save_snippet', methods=['POST'])
 @login_required
@@ -101,6 +223,46 @@ def view_snippet(unique_id):
         return redirect(url_for('index'))
     return render_template('view_snippet.html', snippet=snippet)
 
+
+@app.route('/delete_snippet/<int:snippet_id>')
+@login_required
+def delete_snippet(snippet_id):
+    snippet = Snippet.query.get(snippet_id)
+    
+    if snippet is None or snippet.user_id != current_user.id:
+        flash('Snippet not found or you do not have permission to delete this snippet.', 'danger')
+        return redirect(url_for('view_snippets'))
+    
+    db.session.delete(snippet)
+    db.session.commit()
+    flash('Snippet deleted successfully.', 'success')
+    return redirect(url_for('view_snippets'))
+
+
+
+@app.route('/delete_selected_snippets', methods=['POST'])
+@login_required
+def delete_selected_snippets():
+    snippet_ids = request.form.getlist('snippet_ids')
+    if not snippet_ids:
+        flash('No snippets selected for deletion.', 'danger')
+        return redirect(url_for('view_snippets'))
+
+    snippets = Snippet.query.filter(Snippet.id.in_(snippet_ids), Snippet.user_id == current_user.id).all()
+    print(snippets)
+
+    if not snippets:
+        flash('No valid snippets found for deletion.', 'danger')
+        return redirect(url_for('view_snippets'))
+
+    for snippet in snippets:
+        db.session.delete(snippet)
+    
+    db.session.commit()
+    flash('Selected snippets deleted successfully.', 'success')
+    return redirect(url_for('view_snippets'))
+
+
 @app.route('/share/<unique_id>')
 def share(unique_id):
     snippet = Snippet.query.filter_by(unique_id=unique_id).first_or_404()
@@ -124,6 +286,7 @@ def generate_unique_link():
     # Adjust this URL to your actual application's domain in production
     return request.url_root + 'shared/' + unique_id
 
+
 @app.route('/share_snippet', methods=['POST'])
 def share_snippet():
     """Generate a unique shareable link for the code snippets"""
@@ -134,6 +297,8 @@ def share_snippet():
     full_link = url_for('shared_snippet', link_id=unique_id, _external=True)  # Generates a full URL
     return jsonify({'shareLink': full_link})
 
+  
+  
 @app.route('/shared/<link_id>')
 def shared_snippet(link_id):
     """Render the shared code snippet"""
