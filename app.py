@@ -223,6 +223,21 @@ def view_snippet(unique_id):
         return redirect(url_for('index'))
     return render_template('view_snippet.html', snippet=snippet)
 
+
+@app.route('/delete_snippet/<int:snippet_id>', methods=['POST'])
+@login_required
+def delete_snippet(snippet_id):
+    snippet = Snippet.query.get(snippet_id)
+    
+    if snippet is None or snippet.user_id != current_user.id:
+        flash('Snippet not found or you do not have permission to delete this snippet.', 'danger')
+        return redirect(url_for('view_snippets'))
+    
+    db.session.delete(snippet)
+    db.session.commit()
+    flash('Snippet deleted successfully.', 'success')
+    return redirect(url_for('view_snippets'))
+
 @app.route('/share/<unique_id>')
 def share(unique_id):
     snippet = Snippet.query.filter_by(unique_id=unique_id).first_or_404()
