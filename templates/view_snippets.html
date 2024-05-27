@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
     class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
-
     <head>
         <meta charset="UTF-8">
         <title>My Save Code | Binary Beats IDE</title>
@@ -46,64 +45,113 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
     </style>
+        <script>
+        function confirmDeletion(snippetId) {
+            if (confirm('Are you sure you want to delete this snippet?')) {
+                window.location.href = `/delete_snippet/${snippetId}`;
+            }
+        }
+
+        function confirmMultipleDeletion() {
+            return confirm('Are you sure you want to delete the selected snippets?');
+        }
+
+        function toggleSelectAll(source) {
+            checkboxes = document.getElementsByName('snippet_ids');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    </script>
     </head>
 
     <body
         class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-gray-100 py-8 px-4 font-rubik">
         <div class="max-w-5xl mx-auto">
             <div class="flex justify-between items-center mb-12">
-                <h1 class="text-4xl font-bold text-teal-400 relative"> My
-                    Snippets <span
+                <h1 class="text-4xl font-bold text-teal-400 relative">My
+                    Snippets
+                    <span
                         class="absolute -bottom-4 left-0 w-full h-1 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-full"></span>
-                </h1> <a href="/"
-                    class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition">
-                    Back to Editor </a>
+                </h1>
+                <a href="/"
+                    class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition">Back
+                    to Editor</a>
             </div>
-            <div
-                class="snippet-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Loop through snippets --> {% for snippet in snippets %}
+
+            <form action="{{ url_for('delete_selected_snippets') }}"
+                method="post" onsubmit="return confirmMultipleDeletion()">
+                <div class="mb-4">
+                    {% if snippets %}
+                    <input type="checkbox" onclick="toggleSelectAll(this)"
+                        class="mr-2"> Select All
+                    {% endif %}
+                </div>
                 <div
-                    class="snippet bg-gradient-to-br from-indigo-800 to-purple-900 rounded-lg p-6 border border-indigo-700 shadow-lg relative overflow-hidden">
+                    class="snippet-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Loop through snippets -->
+                    {% for snippet in snippets %}
                     <div
-                        class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-t-lg">
-                    </div> <a
-                        href="{{ url_for('view_snippet', unique_id=snippet.unique_id) }}"
-                        class="text-teal-400 font-bold text-2xl hover:text-teal-300 transition">Snippet
-                        #{{ loop.index
-                        }}</a>
-                    <form
-                        action="{{ url_for('delete_snippet', snippet_id=snippet.id) }}"
-                        method="post" class="inline-block">
-                        <button type="submit"
-                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400 transition flex items-center" onclick="return confirm('Are you sure to delete snippet #{{loop.index}}?')">
-                            Delete
-                        </button>
-                    </form>
-                    <div class="text-gray-300 text-sm mt-2">Created: {{
-                        snippet.created_at.strftime('%Y-%m-%d %H:%M:%S') if
-                        snippet.created_at else 'Unknown' }}</div>
-                    <div
-                        class="snippet-preview mt-4 bg-gradient-to-br from-indigo-700 to-purple-800 rounded-md overflow-hidden relative">
+                        class="snippet bg-gradient-to-br from-indigo-800 to-purple-900 rounded-lg p-6 border border-indigo-700 shadow-lg relative overflow-hidden">
                         <div
-                            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-t-md">
-                        </div> <iframe srcdoc="{{ snippet.html_code }}"
-                            class="w-full h-40 border-none"></iframe>
+                            class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-t-lg"></div>
+                        <div class="flex items-center mb-4">
+                            <input type="checkbox" name="snippet_ids"
+                                value="{{ snippet.id }}" class="mr-2">
+                            <a
+                                href="{{ url_for('view_snippet', unique_id=snippet.unique_id) }}"
+                                class="text-teal-400 font-bold text-2xl hover:text-teal-300 transition">Snippet
+                                #{{ loop.index }}</a>
+                        </div>
+                        <a href="javascript:void(0);"
+                            onclick="confirmDeletion({{ snippet.id }})"
+                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400 transition flex items-center">
+                            <i class="fas fa-trash-alt mr-2"></i>Delete
+                        </a>
+                        <div class="text-gray-300 text-sm mt-2">Created: {{
+                            snippet.created_at.strftime('%Y-%m-%d %H:%M:%S') if
+                            snippet.created_at else 'Unknown' }}</div>
+                        <div
+                            class="snippet-preview mt-4 bg-gradient-to-br from-indigo-700 to-purple-800 rounded-md overflow-hidden relative">
+                            <div
+                                class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 rounded-t-md"></div>
+                            <iframe srcdoc="{{ snippet.html_code }}"
+                                class="w-full h-40 border-none"></iframe>
+                        </div>
                     </div>
-                </div> {% else %} <p class="text-gray-300">No snippets
-                    found.</p> {% endfor %} </div>
+                    {% else %}
+                    <p class="text-gray-300">No snippets found.</p>
+                    {% endfor %}
+                </div>
+                <div class="mt-4">
+
+                    {% if snippets %}
+                    <button type="submit"
+                        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400 transition">
+                        Delete Selected
+                    </button>
+                    {% endif %}
+                </div>
+            </form>
         </div>
+
         <div
             class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 py-4 shadow-lg">
             <div class="max-w-5xl mx-auto flex justify-center items-center">
-                <div class="flex space-x-8"> <a href="#"
-                        class="text-white hover:text-gray-200 transition"> <i
-                            class="fas fa-code fa-3x"></i> </a> <a href="#"
-                        class="text-white hover:text-gray-200 transition"> <i
-                            class="fas fa-pen-nib fa-3x"></i> </a> <a
-                        href="#"
-                        class="text-white hover:text-gray-200 transition"> <i
-                            class="fas fa-palette fa-3x"></i>
-                    </a> </div>
+                <div class="flex space-x-8">
+                    <a href="#"
+                        class="text-white hover:text-gray-200 transition">
+                        <i class="fas fa-code fa-3x"></i>
+                    </a>
+                    <a href="#"
+                        class="text-white hover:text-gray-200 transition">
+                        <i class="fas fa-pen-nib fa-3x"></i>
+                    </a>
+                    <a href="#"
+                        class="text-white hover:text-gray-200 transition">
+                        <i class="fas fa-palette fa-3x"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </body>

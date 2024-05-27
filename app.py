@@ -224,7 +224,7 @@ def view_snippet(unique_id):
     return render_template('view_snippet.html', snippet=snippet)
 
 
-@app.route('/delete_snippet/<int:snippet_id>', methods=['POST'])
+@app.route('/delete_snippet/<int:snippet_id>')
 @login_required
 def delete_snippet(snippet_id):
     snippet = Snippet.query.get(snippet_id)
@@ -237,6 +237,31 @@ def delete_snippet(snippet_id):
     db.session.commit()
     flash('Snippet deleted successfully.', 'success')
     return redirect(url_for('view_snippets'))
+
+
+
+@app.route('/delete_selected_snippets', methods=['POST'])
+@login_required
+def delete_selected_snippets():
+    snippet_ids = request.form.getlist('snippet_ids')
+    if not snippet_ids:
+        flash('No snippets selected for deletion.', 'danger')
+        return redirect(url_for('view_snippets'))
+
+    snippets = Snippet.query.filter(Snippet.id.in_(snippet_ids), Snippet.user_id == current_user.id).all()
+    print(snippets)
+
+    if not snippets:
+        flash('No valid snippets found for deletion.', 'danger')
+        return redirect(url_for('view_snippets'))
+
+    for snippet in snippets:
+        db.session.delete(snippet)
+    
+    db.session.commit()
+    flash('Selected snippets deleted successfully.', 'success')
+    return redirect(url_for('view_snippets'))
+
 
 @app.route('/share/<unique_id>')
 def share(unique_id):
