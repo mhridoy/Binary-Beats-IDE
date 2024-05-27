@@ -1,64 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
     <meta charset="UTF-8">
-    <!-- Update the title to include your main keyword -->
-    
-
-    <!-- Viewport for responsive web design -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- SEO Optimization -->
     <meta name="description" content="Binary Beats IDE - Your online environment for software development.">
-    <meta name="keywords" content="IDE, Binary Beats, coding, programming, online editor">
     <meta name="author" content="Binary Beats">
     <title>Binary Beats IDE</title>
-       <!-- Favicon -->
-       <link rel="icon" type="image/x-icon" href="/static/icons/icon-192x192.png">
-       <link rel="manifest" href="/static/manifest.json">
+    <link rel="icon" type="image/x-icon" href="/static/icons/icon-192x192.png">
+    <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<div id="topbar">
-    <div class="topbar-content">
-        <h2> <i class="fas fa-code"></i> Binary Beats </h2>
-        <h3> Welcome, <span id="username">{{ current_user.username }}</span></h3>
-    </div>
-    <div class="navigation-links">
-        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        <a href="/snippets"><i class="fas fa-clipboard-list"></i> View My Snippets</a>
-    </div>
-    <div class="editor-tabs">
-        <div class="tab active" onclick="showEditor('html')"><i class="fab fa-html5"></i> HTML</div>
-        <div class="tab" onclick="showEditor('css')"><i class="fab fa-css3-alt"></i> CSS</div>
-        <div class="tab" onclick="showEditor('js')"><i class="fab fa-js-square"></i> JavaScript</div>
-    </div>
-    <div class="actions">
-        <button class="run-button" onclick="runCode()"><i class="fas fa-play"></i> Run Code</button>
-        <form id="saveForm" style="display: inline;">
-            <button type="button" onclick="saveCode()"><i class="fas fa-save"></i> Save Code</button>
-            <button type="button" onclick="shareCode()"><i class="fas fa-share-alt"></i> Share Code</button>
-            <button type="button" onclick="shareOutput()"><i class="fas fa-external-link-alt"></i> Share Output</button>
-        </form>
-        <div class="zoom-controls">
-            <button onclick="changeZoom(1)"><i class="fas fa-search-plus"></i></button>
-           <button onclick="changeZoom(-1)"><i class="fas fa-search-minus"></i></button>
+    <!-- <div id="popup" class="popup-container" style="display:none;">
+        <div class="popup-content">
+            <span class="close-button">&times;</span>
+            <img src="https://i.ibb.co/8DnB4Sk/Whats-App-Image-2024-04-05-at-00-32-15.jpg" alt="Popup Image" style="width:100%;">
         </div>
+    </div> -->
+    <div id="topbar">
+        <div class="topbar-content">
+            <h2> <i class="fas fa-code"></i> Binary Beats </h2>
+            <h3> Welcome, <span id="username">{{ current_user.username }}</span></h3>
+        </div>
+        <div class="navigation-links">
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <a href="/snippets"><i class="fas fa-clipboard-list"></i> View My Save Codes</a>
+        </div>
+        <div class="editor-tabs">
+            <div class="tab active" onclick="showEditor('html')"><i class="fab fa-html5"></i> HTML</div>
+            <div class="tab" onclick="showEditor('css')"><i class="fab fa-css3-alt"></i> CSS</div>
+            <div class="tab" onclick="showEditor('js')"><i class="fab fa-js-square"></i> JavaScript</div>
+        </div>
+        <div class="actions">
+            <button class="run-button" onclick="runCode()"><i class="fas fa-play"></i> Run Code</button>
+            <form id="saveForm" style="display: inline;">
+                <!-- <button type="button" onclick="saveCode()"><i class="fas fa-save"></i> Save Code</button> -->
+                <button type="button" onclick="resetEditor()"><i class="fas fa-trash-restore"></i> Clear Code</button>
+                <button type="button" onclick="shareCode()"><i class="fas fa-share-alt"></i> Share Code</button>
+                <button type="button" onclick="shareOutput()"><i class="fas fa-external-link-alt"></i> Share Output</button>
+            </form>
+            <div class="zoom-controls">
+                <button onclick="changeZoom(1)"><i class="fas fa-search-plus"></i></button>
+                <button onclick="changeZoom(-1)"><i class="fas fa-search-minus"></i></button>
+            </div>
+        </div>
+        <p id="shareLink"></p>
     </div>
-    <p id="shareLink"></p>
-</div>
 
-<div id="editorOutputContainer">
-    <div id="htmlEditor" class="editor"></div>
-    <div id="cssEditor" class="editor" style="display: none;"></div>
-    <div id="jsEditor" class="editor" style="display: none;"></div>
-    <div class="resize" onmousedown="initResize(event)"></div>
-    <iframe id="output"></iframe>
-</div>
+    <div id="editorOutputContainer">
+        <div id="htmlEditor" class="editor"></div>
+        <div id="cssEditor" class="editor" style="display: none;"></div>
+        <div id="jsEditor" class="editor" style="display: none;"></div>
+        <div class="resize" onmousedown="initResize(event)"></div>
+        <iframe id="output"></iframe>
+    </div>
 
-<script src="static/js/script.js"></script>
+    <script src="static/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            openPopup();
+
+            document.querySelector('.close-button').onclick = function() {
+                document.getElementById('popup').style.display = "none";
+            };
+        });
+
+        function openPopup() {
+            document.getElementById('popup').style.display = "block";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('popup')) {
+                document.getElementById('popup').style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>

@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Snippet Output</title>
-
-        
-        <style>
-            {{ snippet.css_code | safe }}
-            </style>
-
-
+    <style>
+        {{ snippet.css_code | safe }}
+    </style>
 </head>
 <body>
     {{ snippet.html_code | safe }}
-    <script>{{ snippet.js_code }}</script>
+    <script>
+        try {
+            {{ snippet.js_code | safe }}
+        } catch (error) {
+            document.write('Error: ' + error.message);
+        }
+    </script>
 </body>
 </html>
