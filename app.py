@@ -27,8 +27,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
-
-      
 google = oauth.register(
     name='google',
     client_id=app.config['GOOGLE_CLIENT_ID'],
