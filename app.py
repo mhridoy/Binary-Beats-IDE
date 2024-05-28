@@ -308,6 +308,6 @@ def shared_snippet(link_id):
     return 'Invalid link', 404
 
 # ... remaining code ...
-
+                    
 if __name__ == '__main__':
     app.run(debug=True)
