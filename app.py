@@ -18,21 +18,19 @@ from dotenv import load_dotenv
 load_dotenv()  # Load environment variables from .env file
 app = Flask(__name__)
 oauth = OAuth(app)
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
+GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['GOOGLE_CLIENT_ID'] = "google-client-id"
-app.config['GOOGLE_CLIENT_SECRET'] = "google-client-secret-key"
-app.config['GITHUB_CLIENT_ID'] = "github-client-id"
-app.config['GITHUB_CLIENT_SECRET'] = "github-client-secret-key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-
 
       
 google = oauth.register(
     name='google',
-    client_id=app.config['GOOGLE_CLIENT_ID'],
-    client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+    client_id=GOOGLE_CLIENT_ID,
+    client_secret=GOOGLE_CLIENT_SECRET,
     access_token_url='https://accounts.google.com/o/oauth2/token',
     access_token_params=None,
     authorize_url='https://accounts.google.com/o/oauth2/auth',
@@ -46,8 +44,8 @@ google = oauth.register(
 
 github = oauth.register (
   name = 'github',
-    client_id = app.config["GITHUB_CLIENT_ID"],
-    client_secret = app.config["GITHUB_CLIENT_SECRET"],
+    client_id = GITHUB_CLIENT_ID,
+    client_secret = GITHUB_CLIENT_SECRET,
     access_token_url = 'https://github.com/login/oauth/access_token',
     access_token_params = None,
     authorize_url = 'https://github.com/login/oauth/authorize',
