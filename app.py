@@ -81,7 +81,7 @@ def load_user(user_id):
 def index():
     return render_template('index.html', user=current_user)
 
-@app.route('/ideengine', methods=['GET'])
+@app.route('/home', methods=['GET'])
 def home():
     if current_user.is_authenticated:
         return redirect(url_for('index'))

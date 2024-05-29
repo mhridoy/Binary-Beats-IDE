@@ -2,3 +2,12 @@
 .environ
 static/.DS_Store
 instance/db.sqlite
+__pycache__
+instance/.DS_Store
+instance/*.pyc
+instance/*.pyo
+tests
+venv
+*.pyc
+*.pyo
+*.db
