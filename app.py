@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from datetime import datetime
 from flask_migrate import Migrate
-import string, requests, secrets
+import string, secrets
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 from authlib.integrations.flask_client import OAuth
@@ -20,10 +20,9 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
 GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 
 google = oauth.register(
     name='google',
@@ -58,12 +57,10 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-
 
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -75,24 +72,20 @@ class Snippet(db.Model):
     user = db.relationship('User', backref=db.backref('snippets', lazy=True))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 @app.route('/')
 @login_required
 def index():
     return render_template('index.html', user=current_user)
 
-
 @app.route('/ideengine', methods=['GET'])
 def home():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     return render_template('home.html')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -109,7 +102,6 @@ def login():
         flash('Invalid username or password')
 
     return render_template('login.html')
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -132,14 +124,12 @@ def signup():
 
     return render_template('signup.html')
 
-
 # Google login route
 @app.route('/login/google')
 def google_login():
     google = oauth.create_client('google')
     redirect_url = url_for('google_authorize', _external=True)
     return google.authorize_redirect(redirect_url)
-
 
 # Google authorize route
 @app.route('/login/google/callback')
@@ -157,14 +147,12 @@ def google_authorize():
     login_user(user)
     return redirect(url_for('index'))
 
-
 # GitHub login route
 @app.route('/login/github')
 def github_login():
     github = oauth.create_client('github')
     redirect_uri = url_for('github_authorize', _external=True)
     return github.authorize_redirect(redirect_uri)
-
 
 # GitHub authorize route
 @app.route('/login/github/callback')
@@ -182,13 +170,11 @@ def github_authorize():
     login_user(user)
     return redirect(url_for('index'))
 
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 @app.route('/save_snippet', methods=['POST'])
 @login_required
@@ -199,13 +185,11 @@ def save_snippet():
     db.session.commit()
     return jsonify({'unique_id': new_snippet.unique_id})
 
-
 @app.route('/snippets')
 @login_required
 def view_snippets():
     snippets = Snippet.query.filter_by(user_id=current_user.id).all()
     return render_template('view_snippets.html', snippets=snippets)
-
 
 @app.route('/snippet/<unique_id>')
 @login_required
@@ -215,7 +199,6 @@ def view_snippet(unique_id):
         flash('Unauthorized access!')
         return redirect(url_for('index'))
     return render_template('view_snippet.html', snippet=snippet)
-
 
 @app.route('/delete_snippet/<int:snippet_id>')
 @login_required
@@ -230,7 +213,6 @@ def delete_snippet(snippet_id):
     db.session.commit()
     flash('Snippet deleted successfully.', 'success')
     return redirect(url_for('view_snippets'))
-
 
 @app.route('/delete_selected_snippets', methods=['POST'])
 @login_required
@@ -253,27 +235,22 @@ def delete_selected_snippets():
     flash('Selected snippets deleted successfully.', 'success')
     return redirect(url_for('view_snippets'))
 
-
 @app.route('/share/<unique_id>')
 def share(unique_id):
     snippet = Snippet.query.filter_by(unique_id=unique_id).first_or_404()
     return render_template('share.html', snippet=snippet)
-
 
 @app.route('/share/output/<unique_id>')
 def share_output(unique_id):
     snippet = Snippet.query.filter_by(unique_id=unique_id).first_or_404()
     return render_template('share_output.html', snippet=snippet)
 
-
 @app.route('/sw.js')
 def sw():
     return app.send_static_file('sw.js')
 
-
 # Dictionary to store the code snippets
 snippet_links = {}
-
 
 def generate_unique_link():
     """Generate a unique shareable link"""
@@ -281,7 +258,6 @@ def generate_unique_link():
     unique_id = ''.join(secrets.choice(characters) for _ in range(8))
     # Adjust this URL to your actual application's domain in production
     return request.url_root + 'shared/' + unique_id
-
 
 @app.route('/share_snippet', methods=['POST'])
 def share_snippet():
@@ -293,7 +269,6 @@ def share_snippet():
     full_link = url_for('shared_snippet', link_id=unique_id, _external=True)  # Generates a full URL
     return jsonify({'shareLink': full_link})
 
-
 @app.route('/shared/<link_id>')
 def shared_snippet(link_id):
     """Render the shared code snippet"""
@@ -304,7 +279,5 @@ def shared_snippet(link_id):
 
     return 'Invalid link', 404
 
-# ... remaining code ...
-                    
 if __name__ == '__main__':
     app.run(debug=False)
