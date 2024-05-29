@@ -10,12 +10,10 @@ import google.oauth2.credentials
 import google_auth_oauthlib.flow
 from authlib.integrations.flask_client import OAuth
 import os
-
-      
-      
-      
 from dotenv import load_dotenv
+
 load_dotenv()  # Load environment variables from .env file
+
 app = Flask(__name__)
 oauth = OAuth(app)
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
@@ -26,7 +24,6 @@ app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-      
 google = oauth.register(
     name='google',
     client_id=GOOGLE_CLIENT_ID,
@@ -38,20 +35,19 @@ google = oauth.register(
     api_base_url='https://www.googleapis.com/oauth2/v1/',
     userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
     client_kwargs={'scope': 'openid email profile'},
-    jwks_uri = "https://www.googleapis.com/oauth2/v3/certs"
+    jwks_uri="https://www.googleapis.com/oauth2/v3/certs"
 )
 
-
-github = oauth.register (
-  name = 'github',
-    client_id = GITHUB_CLIENT_ID,
-    client_secret = GITHUB_CLIENT_SECRET,
-    access_token_url = 'https://github.com/login/oauth/access_token',
-    access_token_params = None,
-    authorize_url = 'https://github.com/login/oauth/authorize',
-    authorize_params = None,
-    api_base_url = 'https://api.github.com/',
-    client_kwargs = {'scope': 'user:email'},
+github = oauth.register(
+    name='github',
+    client_id=GITHUB_CLIENT_ID,
+    client_secret=GITHUB_CLIENT_SECRET,
+    access_token_url='https://github.com/login/oauth/access_token',
+    access_token_params=None,
+    authorize_url='https://github.com/login/oauth/authorize',
+    authorize_params=None,
+    api_base_url='https://api.github.com/',
+    client_kwargs={'scope': 'user:email'},
 )
 
 db = SQLAlchemy(app)
@@ -61,10 +57,12 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
+
 
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -81,16 +79,17 @@ class Snippet(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 @app.route('/')
 @login_required
 def index():
     return render_template('index.html', user=current_user)
 
+
 @app.route('/ideengine', methods=['GET'])
 def home():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
     return render_template('home.html')
 
 
@@ -98,7 +97,7 @@ def home():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -107,14 +106,15 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         flash('Invalid username or password')
-        
+
     return render_template('login.html')
-    
+
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -128,10 +128,8 @@ def signup():
         db.session.commit()
         flash('Account created successfully, please login.')
         return redirect(url_for('login'))
-    
-    
+
     return render_template('signup.html')
-    
 
 
 # Google login route
@@ -141,61 +139,55 @@ def google_login():
     redirect_url = url_for('google_authorize', _external=True)
     return google.authorize_redirect(redirect_url)
 
+
 # Google authorize route
 @app.route('/login/google/callback')
 def google_authorize():
     google = oauth.create_client('google')  # Reuse the OAuth client
     token = google.authorize_access_token()  # Retrieve the access token
     resp = google.get('userinfo').json()  # Use the token to fetch the user info
-    # print(resp.keys())
-    # Assuming 'sub' is the unique identifier for the user in Google's response
     user = User.query.filter_by(username=resp['email']).first()
-    
+
     if not user:
         # If the user doesn't exist, create a new one
-        user = User(
-            username=resp['email']
-            # Other fields...
-        )
+        user = User(username=resp['email'])
         db.session.add(user)
         db.session.commit()
-    print('Check: ' ,user.username, '\n')   
     login_user(user)
-    
     return redirect(url_for('index'))
 
-# Github login route
+
+# GitHub login route
 @app.route('/login/github')
 def github_login():
     github = oauth.create_client('github')
     redirect_uri = url_for('github_authorize', _external=True)
     return github.authorize_redirect(redirect_uri)
 
-# Github authorize route
+
+# GitHub authorize route
 @app.route('/login/github/callback')
 def github_authorize():
     github = oauth.create_client('github')
     token = github.authorize_access_token()
     resp = github.get('user').json()
     user = User.query.filter_by(username=resp['login']).first()
-    
+
     if not user:
         # If the user doesn't exist, create a new one
-        user = User(
-            username=resp['login']
-            # Other fields...
-        )
+        user = User(username=resp['login'])
         db.session.add(user)
         db.session.commit()
     login_user(user)
-    # return "You are successfully signed in using github"
     return redirect(url_for('index'))
+
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
 
 @app.route('/save_snippet', methods=['POST'])
 @login_required
@@ -206,11 +198,13 @@ def save_snippet():
     db.session.commit()
     return jsonify({'unique_id': new_snippet.unique_id})
 
+
 @app.route('/snippets')
 @login_required
 def view_snippets():
     snippets = Snippet.query.filter_by(user_id=current_user.id).all()
     return render_template('view_snippets.html', snippets=snippets)
+
 
 @app.route('/snippet/<unique_id>')
 @login_required
@@ -226,16 +220,15 @@ def view_snippet(unique_id):
 @login_required
 def delete_snippet(snippet_id):
     snippet = Snippet.query.get(snippet_id)
-    
+
     if snippet is None or snippet.user_id != current_user.id:
         flash('Snippet not found or you do not have permission to delete this snippet.', 'danger')
         return redirect(url_for('view_snippets'))
-    
+
     db.session.delete(snippet)
     db.session.commit()
     flash('Snippet deleted successfully.', 'success')
     return redirect(url_for('view_snippets'))
-
 
 
 @app.route('/delete_selected_snippets', methods=['POST'])
@@ -247,7 +240,6 @@ def delete_selected_snippets():
         return redirect(url_for('view_snippets'))
 
     snippets = Snippet.query.filter(Snippet.id.in_(snippet_ids), Snippet.user_id == current_user.id).all()
-    print(snippets)
 
     if not snippets:
         flash('No valid snippets found for deletion.', 'danger')
@@ -255,7 +247,7 @@ def delete_selected_snippets():
 
     for snippet in snippets:
         db.session.delete(snippet)
-    
+
     db.session.commit()
     flash('Selected snippets deleted successfully.', 'success')
     return redirect(url_for('view_snippets'))
@@ -266,16 +258,21 @@ def share(unique_id):
     snippet = Snippet.query.filter_by(unique_id=unique_id).first_or_404()
     return render_template('share.html', snippet=snippet)
 
+
 @app.route('/share/output/<unique_id>')
 def share_output(unique_id):
     snippet = Snippet.query.filter_by(unique_id=unique_id).first_or_404()
     return render_template('share_output.html', snippet=snippet)
+
+
 @app.route('/sw.js')
 def sw():
     return app.send_static_file('sw.js')
 
+
 # Dictionary to store the code snippets
 snippet_links = {}
+
 
 def generate_unique_link():
     """Generate a unique shareable link"""
@@ -295,8 +292,7 @@ def share_snippet():
     full_link = url_for('shared_snippet', link_id=unique_id, _external=True)  # Generates a full URL
     return jsonify({'shareLink': full_link})
 
-  
-  
+
 @app.route('/shared/<link_id>')
 def shared_snippet(link_id):
     """Render the shared code snippet"""
@@ -307,7 +303,6 @@ def shared_snippet(link_id):
 
     return 'Invalid link', 404
 
-# ... remaining code ...
 
 if __name__ == '__main__':
     app.run(debug=True)
