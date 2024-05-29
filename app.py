@@ -24,6 +24,7 @@ app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+
 google = oauth.register(
     name='google',
     client_id=GOOGLE_CLIENT_ID,
@@ -303,6 +304,7 @@ def shared_snippet(link_id):
 
     return 'Invalid link', 404
 
-
+# ... remaining code ...
+                    
 if __name__ == '__main__':
     app.run(debug=True)
